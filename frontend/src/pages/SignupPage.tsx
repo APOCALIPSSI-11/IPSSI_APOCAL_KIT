@@ -111,7 +111,10 @@ export default function SignupPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="signup-first-name" className="block text-sm font-medium text-slate-700 mb-1">
+              <label
+                htmlFor="signup-first-name"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
                 Prénom <span className="text-slate-400 font-normal">(facultatif)</span>
               </label>
               <input
@@ -124,7 +127,10 @@ export default function SignupPage() {
               />
             </div>
             <div>
-              <label htmlFor="signup-last-name" className="block text-sm font-medium text-slate-700 mb-1">
+              <label
+                htmlFor="signup-last-name"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
                 Nom <span className="text-slate-400 font-normal">(facultatif)</span>
               </label>
               <input
@@ -139,7 +145,10 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label htmlFor="signup-password" className="block text-sm font-medium text-slate-700 mb-1">
+            <label
+              htmlFor="signup-password"
+              className="block text-sm font-medium text-slate-700 mb-1"
+            >
               Mot de passe
               <span className="text-slate-400 font-normal"> (≥ 8 caractères)</span>
             </label>
@@ -172,7 +181,7 @@ export default function SignupPage() {
               </Link>{' '}
               et la{' '}
               <Link to="/legal/confidentialite" className="text-indigo-600 hover:underline">
-                  Politique de confidentialité
+                Politique de confidentialité
               </Link>{' '}
               d'EduTutor IA.
             </label>

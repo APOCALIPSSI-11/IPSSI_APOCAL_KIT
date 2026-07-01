@@ -279,12 +279,14 @@ export default function UploadPage() {
                   isDraggingPdf
                     ? 'border-indigo-500 bg-indigo-50'
                     : 'border-slate-300 bg-slate-50 hover:bg-slate-100'
-                  } ${loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+                } ${loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <p className="text-sm font-medium text-slate-700">
                   Glissez-déposez votre PDF ici, ou cliquez pour choisir un fichier
                 </p>
-                <p className="text-xs text-slate-500 mt-1">Format accepté : .pdf • Taille max : 5 Mo</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Format accepté : .pdf • Taille max : 5 Mo
+                </p>
                 {pdf && (
                   <p className="text-xs text-emerald-700 mt-3">
                     Fichier sélectionné : {pdf.name} ({(pdf.size / (1024 * 1024)).toFixed(2)} Mo)
@@ -294,7 +296,9 @@ export default function UploadPage() {
             </>
           )}
           {mode === 'text' && (
-            <p className={`text-xs mt-1 ${sourceText.length < 200 ? 'text-amber-600' : 'text-slate-500'}`}>
+            <p
+              className={`text-xs mt-1 ${sourceText.length < 200 ? 'text-amber-600' : 'text-slate-500'}`}
+            >
               {sourceText.length} / 200 caractères minimum
             </p>
           )}

@@ -26,7 +26,7 @@ describe('UploadPage', () => {
     render(
       <MemoryRouter>
         <UploadPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     const submitButton = screen.getByRole('button', { name: /Générer le quiz/i });
@@ -37,7 +37,7 @@ describe('UploadPage', () => {
     render(
       <MemoryRouter>
         <UploadPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     // Titre
@@ -65,7 +65,7 @@ describe('UploadPage', () => {
     render(
       <MemoryRouter>
         <UploadPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     // Titre

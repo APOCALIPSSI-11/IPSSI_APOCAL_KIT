@@ -41,7 +41,7 @@ describe('SignupPage', () => {
     render(
       <MemoryRouter>
         <SignupPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByRole('heading', { name: /Créer un compte/i })).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe('SignupPage', () => {
     expect(screen.getByRole('button', { name: /Créer mon compte/i })).toBeInTheDocument();
   });
 
-  it('inscrit l\'utilisateur et redirige vers /upload en cas de succès', async () => {
+  it("inscrit l'utilisateur et redirige vers /upload en cas de succès", async () => {
     vi.mocked(signup).mockResolvedValueOnce({
       id: 1,
       email: 'bob@test.com',
@@ -64,13 +64,15 @@ describe('SignupPage', () => {
     render(
       <MemoryRouter>
         <SignupPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'bob@test.com' } });
     fireEvent.change(screen.getByLabelText(/Prénom/i), { target: { value: 'Bob' } });
     fireEvent.change(screen.getByLabelText(/^Nom/i), { target: { value: 'Test' } });
-    fireEvent.change(screen.getByLabelText(/Mot de passe/i), { target: { value: 'motdepasse123' } });
+    fireEvent.change(screen.getByLabelText(/Mot de passe/i), {
+      target: { value: 'motdepasse123' },
+    });
     fireEvent.click(screen.getByRole('checkbox'));
 
     fireEvent.click(screen.getByRole('button', { name: /Créer mon compte/i }));
@@ -86,7 +88,7 @@ describe('SignupPage', () => {
     });
   });
 
-  it('affiche un message d\'erreur si l\'API d\'inscription renvoie une erreur', async () => {
+  it("affiche un message d'erreur si l'API d'inscription renvoie une erreur", async () => {
     const errorResponse = new AxiosError('Request failed with status code 400');
     errorResponse.response = {
       data: { detail: 'Un compte existe déjà avec cet email.' },
@@ -100,7 +102,7 @@ describe('SignupPage', () => {
     render(
       <MemoryRouter>
         <SignupPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'double@test.com' } });
