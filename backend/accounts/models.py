@@ -20,6 +20,10 @@ from django.db import models
 class Profile(models.Model):
     """Informations complémentaires attachées à un utilisateur."""
 
+    class Role(models.TextChoices):
+        STUDENT = "student", "Étudiant"
+        TEACHER = "teacher", "Enseignant"
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -28,6 +32,12 @@ class Profile(models.Model):
     # Validation "soft" : le compte fonctionne même si l'email n'est pas vérifié,
     # mais un bandeau invite l'utilisateur à cliquer le lien de confirmation.
     email_verified = models.BooleanField(default=False)
+    role = models.CharField(
+        max_length=10,
+        choices=Role.choices,
+        default=Role.STUDENT,
+        help_text="Rôle de l'utilisateur sur la plateforme."
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
