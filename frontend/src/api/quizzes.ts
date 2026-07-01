@@ -16,11 +16,14 @@ export type Quiz = {
   questions: Question[];
 };
 
+export type QuizStatus = 'generating' | 'completed' | 'failed';
+
 export type QuizSummary = {
   id: number;
   title: string;
   score: number | null;
   nb_questions: number;
+  status: QuizStatus;
   created_at: string;
 };
 

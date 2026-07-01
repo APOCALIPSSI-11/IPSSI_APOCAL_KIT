@@ -111,8 +111,14 @@ def _generate_async(quiz_id: int, source_text: str, title: str) -> None:
                     correct_index=q_data["correct_index"],
                     chapter=q_data.get("chapter"),
                 )
+            quiz.status = Quiz.Status.COMPLETED
+            quiz.save(update_fields=["status", "updated_at"])
     except Exception:
+        # On NE laisse PAS le quiz en état « generating » : sinon le front
+        # poll indéfiniment (barre bloquée à 95 %) et une carte vide reste
+        # cliquable dans l'historique. On marque explicitement l'échec.
         logger.exception("Échec de génération async pour le quiz %d", quiz_id)
+        Quiz.objects.filter(pk=quiz_id).update(status=Quiz.Status.FAILED)
     finally:
         close_old_connections()
 

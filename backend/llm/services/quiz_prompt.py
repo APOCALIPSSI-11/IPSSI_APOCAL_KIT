@@ -132,10 +132,13 @@ def parse_and_validate_quiz(raw: str) -> list[dict]:
         # Nettoyage et limitation à 100 caractères
         cleaned_chapter = chapter.strip().capitalize()[:100]
 
-        # Neutralisation XSS : on échappe les balises HTML dans le prompt et
-        # les options pour éviter toute injection lors d'un rendu côté client.
-        sanitized_prompt = html.escape(prompt.strip())
-        sanitized_options = [html.escape(o.strip()) for o in options]
+        # Neutralisation XSS : on échappe les balises HTML (< > &) du prompt et
+        # des options pour éviter toute injection lors d'un rendu côté client.
+        # quote=False : on N'échappe PAS ' et " — inutile pour du contenu textuel
+        # (le risque XSS via guillemets ne concerne que les attributs HTML), et
+        # les échapper corromprait l'affichage ("Qu'est-ce que" → "Qu&#x27;est-ce").
+        sanitized_prompt = html.escape(prompt.strip(), quote=False)
+        sanitized_options = [html.escape(o.strip(), quote=False) for o in options]
 
         cleaned.append(
             {
