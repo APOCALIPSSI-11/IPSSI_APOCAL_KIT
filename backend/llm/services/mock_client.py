@@ -5,9 +5,11 @@ Génère 10 questions plausibles à partir des premiers mots du source_text.
 Activé via : LLM_BACKEND=mock dans le .env
 """
 
+import json
 import random
 
 from .base import LLMClient
+from .quiz_prompt import parse_and_validate_quiz
 
 
 class MockLLMClient(LLMClient):
@@ -36,6 +38,10 @@ class MockLLMClient(LLMClient):
                     "prompt": f"[MOCK Q{i}] D'après le cours « {title} », quelle affirmation est correcte sur « {word} » ?",
                     "options": options,
                     "correct_index": correct_idx,
+                    "chapter": word.capitalize(),
                 }
             )
-        return questions
+        # Passe par la même validation/échappement HTML que les clients réels
+        # (Ollama, OpenAI, Anthropic, Gemini) — le mock est le seul backend actif
+        # en CI, il ne doit pas être un cas à part côté sécurité.
+        return parse_and_validate_quiz(json.dumps({"questions": questions}))

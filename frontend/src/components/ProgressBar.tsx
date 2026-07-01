@@ -24,7 +24,9 @@ export default function ProgressBar({ active }: { active: boolean }) {
   useEffect(() => {
     if (progress < 25) setStepText('📥 Analyse du cours et extraction du texte...');
     else if (progress < 60)
-      setStepText('🤖 Inférence LLM locale et formulation des questions (cette étape prend du temps)...');
+      setStepText(
+        '🤖 Inférence LLM locale et formulation des questions (cette étape prend du temps)...',
+      );
     else if (progress < 85) setStepText('✍️ Rédaction des distracteurs et choix pédagogiques...');
     else setStepText('🔍 Validation du JSON et enregistrement du quiz...');
   }, [progress]);
