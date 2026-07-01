@@ -46,6 +46,24 @@ def test_signup_requires_email(client):
     assert response.status_code == 400
 
 
+def test_signup_password_too_short(client):
+    response = client.post(
+        "/api/accounts/signup/",
+        {"email": "bob@test.com", "password": "short"},
+        format="json",
+    )
+    assert response.status_code == 400
+
+
+def test_signup_duplicate_email(client, user):
+    response = client.post(
+        "/api/accounts/signup/",
+        {"email": "ALICE@TEST.COM", "password": "password123"},
+        format="json",
+    )
+    assert response.status_code == 400
+
+
 def test_login_returns_token(client, user):
     response = client.post(
         "/api/accounts/login/",
@@ -90,3 +108,24 @@ def test_logout_invalidates_token(client, user):
     assert response.status_code == 204
     # Le token n'existe plus
     assert not Token.objects.filter(key=token.key).exists()
+
+
+def test_account_deletion_creates_rgpd_audit_log(client, user):
+    # T-RGPD-01.3 : la suppression de compte doit journaliser un audit trail
+    # RGPD, avec l'email conservé même après le hard delete du User.
+    from rest_framework.authtoken.models import Token
+
+    from .models import RGPDRequestLog
+
+    token = Token.objects.create(user=user)
+    client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
+    response = client.delete(
+        "/api/accounts/profile/",
+        {"password": "motdepasse123"},
+        format="json",
+    )
+    assert response.status_code == 204
+    assert not User.objects.filter(email="alice@test.com").exists()
+
+    log = RGPDRequestLog.objects.get(user_email="alice@test.com", request_type="delete")
+    assert log.timestamp is not None

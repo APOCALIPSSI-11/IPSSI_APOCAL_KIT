@@ -116,6 +116,37 @@ export default function DashboardPage() {
             </p>
           </div>
 
+          {/* Précision par chapitre */}
+          {stats.chapter_stats && stats.chapter_stats.length > 0 && (
+            <div className="card">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Précision par chapitre</h2>
+              <div className="space-y-4">
+                {stats.chapter_stats.map((c) => {
+                  let progressColor = 'bg-rose-500';
+                  if (c.accuracy >= 70) progressColor = 'bg-emerald-500';
+                  else if (c.accuracy >= 40) progressColor = 'bg-amber-500';
+
+                  return (
+                    <div key={c.chapter} className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium text-slate-700">{c.chapter}</span>
+                        <span className="text-slate-500">
+                          {c.accuracy}% ({c.correct}/{c.total})
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full ${progressColor} transition-all duration-500`}
+                          style={{ width: `${c.accuracy}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3">
             <Link to="/review" className="btn-secondary">
               📕 Réviser mes erreurs

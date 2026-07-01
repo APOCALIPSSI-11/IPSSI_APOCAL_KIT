@@ -10,43 +10,6 @@ from django.conf import settings
 from django.db import models
 
 
-class Course(models.Model):
-    """Cours déposé par un utilisateur (PDF extrait ou texte collé)."""
-
-    class Source(models.TextChoices):
-        PDF = "pdf", "PDF uploadé"
-        TEXT = "text", "Texte collé"
-
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="courses",
-        help_text="Propriétaire du cours.",
-    )
-    title = models.CharField(
-        max_length=200,
-        help_text="Titre du cours (saisi ou déduit du nom de fichier PDF).",
-    )
-    content = models.TextField(
-        help_text="Texte brut du cours (extrait PDF ou saisie utilisateur).",
-    )
-    source = models.CharField(
-        max_length=10,
-        choices=Source.choices,
-        help_text="Origine du contenu : PDF uploadé ou texte collé.",
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-        verbose_name = "Cours"
-        verbose_name_plural = "Cours"
-
-    def __str__(self) -> str:
-        return f"{self.title} — {self.user.username}"
-
-
 class Quiz(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -98,6 +61,12 @@ class Question(models.Model):
         null=True,
         blank=True,
         help_text="Dernier index (0 à 3) choisi par l'utilisateur (None si pas répondu).",
+    )
+    chapter = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="Nom du chapitre associé à cette question (généré par le LLM).",
     )
 
     class Meta:

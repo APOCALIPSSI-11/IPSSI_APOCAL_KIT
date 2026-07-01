@@ -76,8 +76,11 @@ export default function SignupPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <label htmlFor="signup-email" className="block text-sm font-medium text-slate-700 mb-1">
+              Email
+            </label>
             <input
+              id="signup-email"
               type="email"
               required
               autoFocus
@@ -90,10 +93,11 @@ export default function SignupPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="signup-first-name" className="block text-sm font-medium text-slate-700 mb-1">
                 Prénom <span className="text-slate-400 font-normal">(facultatif)</span>
               </label>
               <input
+                id="signup-first-name"
                 type="text"
                 autoComplete="given-name"
                 value={firstName}
@@ -102,10 +106,11 @@ export default function SignupPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="signup-last-name" className="block text-sm font-medium text-slate-700 mb-1">
                 Nom <span className="text-slate-400 font-normal">(facultatif)</span>
               </label>
               <input
+                id="signup-last-name"
                 type="text"
                 autoComplete="family-name"
                 value={lastName}
@@ -116,11 +121,12 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label htmlFor="signup-password" className="block text-sm font-medium text-slate-700 mb-1">
               Mot de passe
               <span className="text-slate-400 font-normal"> (≥ 8 caractères)</span>
             </label>
             <input
+              id="signup-password"
               type="password"
               required
               minLength={8}
