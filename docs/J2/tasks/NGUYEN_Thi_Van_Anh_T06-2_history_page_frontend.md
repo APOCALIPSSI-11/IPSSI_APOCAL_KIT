@@ -64,11 +64,11 @@ Utiliser `useEffect` pour lancer l'appel `listQuizzes()`. Veiller à extraire `.
 
 ## 5. Definition of Done
 
-- [ ] La page `/history` est accessible.
-- [ ] L'appel d'API récupère l'ensemble des quiz de l'utilisateur.
-- [ ] La liste s'affiche sous forme de grille adaptative.
-- [ ] Chaque carte indique le titre, la date formatée, et son badge de score coloré correspondant.
-- [ ] Un clic sur une carte redirige vers la route du quiz associé `/quiz/:id`.
+- [x] La page `/history` est accessible.
+- [x] L'appel d'API récupère l'ensemble des quiz de l'utilisateur.
+- [x] La liste s'affiche sous forme de grille adaptative.
+- [x] Chaque carte indique le titre, la date formatée, et son badge de score coloré correspondant.
+- [x] Un clic sur une carte redirige vers la route du quiz associé `/quiz/:id`.
 
 ---
 
