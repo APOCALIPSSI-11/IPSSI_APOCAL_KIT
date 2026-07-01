@@ -144,7 +144,7 @@ class StatsView(APIView):
         ]
 
         # Agrégation par chapitre : calcule le total de questions et le total de correctes
-        from django.db.models import Case, When, IntegerField, Count, Sum
+        from django.db.models import Case, IntegerField, Sum, When
 
         chapter_stats = answered.values("chapter").annotate(
             total=Count("id"),
@@ -197,7 +197,9 @@ class QuizStatusView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={200: OpenApiResponse(description="{ status: generating | completed }")})
+    @extend_schema(
+        responses={200: OpenApiResponse(description="{ status: generating | completed }")}
+    )
     def get(self, request, pk: int):
         quiz = get_object_or_404(Quiz, pk=pk, user=request.user)
         if quiz.questions.count() == 10:

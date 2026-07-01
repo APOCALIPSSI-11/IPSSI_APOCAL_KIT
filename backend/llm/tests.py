@@ -1,13 +1,18 @@
 """Tests pour l'app llm — K1 (ping) + K2 (generate-quiz)."""
 
+import json as _json
 from unittest.mock import patch
 
 import pytest
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError
 from django.test import override_settings
 from rest_framework.test import APIClient
 
+from llm.pdf_utils import PDFError, extract_text_from_pdf
+from llm.services.base import LLMError
+from llm.services.quiz_prompt import parse_and_validate_quiz
 from quizzes.models import Question, Quiz
 
 pytestmark = pytest.mark.django_db
@@ -73,11 +78,8 @@ def test_generate_quiz_requires_auth():
     assert response.status_code in (401, 403)
 
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-from llm.pdf_utils import extract_text_from_pdf, PDFError
-
-
 # --- Tests PDF upload (T-02.5 — Romain LEFEVRE) ---
+
 
 @override_settings(LLM_BACKEND="mock")
 @patch("llm.views.extract_text_from_pdf")
@@ -97,7 +99,9 @@ def test_generate_quiz_valid_pdf_success(mock_extract, auth_client):
 
 @override_settings(LLM_BACKEND="mock")
 def test_generate_quiz_invalid_file_type(auth_client):
-    txt_file = SimpleUploadedFile("test.txt", b"Lorem ipsum dolor sit amet", content_type="text/plain")
+    txt_file = SimpleUploadedFile(
+        "test.txt", b"Lorem ipsum dolor sit amet", content_type="text/plain"
+    )
 
     response = auth_client.post(
         "/api/llm/generate-quiz/",
@@ -117,6 +121,7 @@ def test_extract_text_from_pdf_too_large():
 
 
 # --- Test de rollback transactionnel (T-03.3 — J3/Seer) ---
+
 
 @override_settings(LLM_BACKEND="mock")
 def test_generate_quiz_rolls_back_on_question_insert_failure(auth_client):
@@ -146,10 +151,6 @@ def test_generate_quiz_rolls_back_on_question_insert_failure(auth_client):
 # ---------------------------------------------------------------------------
 # TSEC-03 — Tests adversariaux de sécurité LLM (Romain LEFEVRE)
 # ---------------------------------------------------------------------------
-
-from llm.services.quiz_prompt import parse_and_validate_quiz
-from llm.services.base import LLMError
-import json as _json
 
 
 def _make_valid_quiz_json(**overrides) -> str:
@@ -184,16 +185,18 @@ def test_security_prompt_injection_ignored(auth_client):
     )
     # Le système doit soit retourner 201 (le mock ignore l'injection),
     # soit 400/502 (l'injection produit une sortie LLM invalide rejetée).
-    assert response.status_code in (201, 400, 502), (
-        f"Statut inattendu {response.status_code} — le pipeline a peut-être obéi à l'injection."
-    )
+    assert response.status_code in (
+        201,
+        400,
+        502,
+    ), f"Statut inattendu {response.status_code} — le pipeline a peut-être obéi à l'injection."
     if response.status_code == 201:
         # Si la génération a réussi, aucune question ne doit contenir "PIÉGÉ"
         data = response.data
         for q in data.get("questions", []):
-            assert "PIÉGÉ" not in q.get("prompt", ""), (
-                "Le prompt d'une question contient le mot 'PIÉGÉ' — injection réussie !"
-            )
+            assert "PIÉGÉ" not in q.get(
+                "prompt", ""
+            ), "Le prompt d'une question contient le mot 'PIÉGÉ' — injection réussie !"
 
 
 def test_security_xss_injection_escaped():
@@ -201,22 +204,27 @@ def test_security_xss_injection_escaped():
     balises HTML dans les prompts et options renvoyés par le LLM."""
     xss_prompt = "<script>alert('XSS')</script> Quelle est la capitale de la France ?"
     xss_option = "<img src=x onerror=alert(1)> Paris"
-    raw = _json.dumps({
-        "questions": [
-            {
-                "prompt": xss_prompt,
-                "options": [xss_option, "Londres", "Madrid", "Berlin"],
-                "correct_index": 0,
-                "chapter": "Géographie",
-            }
-        ] * 10
-    })
+    raw = _json.dumps(
+        {
+            "questions": [
+                {
+                    "prompt": xss_prompt,
+                    "options": [xss_option, "Londres", "Madrid", "Berlin"],
+                    "correct_index": 0,
+                    "chapter": "Géographie",
+                }
+            ]
+            * 10
+        }
+    )
 
     result = parse_and_validate_quiz(raw)
 
     # Les balises HTML doivent être échappées dans le prompt et les options
     assert "<script>" not in result[0]["prompt"], "Balise <script> non échappée dans le prompt !"
-    assert "&lt;script&gt;" in result[0]["prompt"], "Le prompt doit contenir &lt;script&gt; (échappé)."
+    assert (
+        "&lt;script&gt;" in result[0]["prompt"]
+    ), "Le prompt doit contenir &lt;script&gt; (échappé)."
     assert "<img" not in result[0]["options"][0], "Balise <img> non échappée dans les options !"
     assert "&lt;img" in result[0]["options"][0], "L'option doit contenir &lt;img (échappée)."
 
@@ -236,16 +244,18 @@ def test_security_invalid_correct_index_raises_llm_error():
         parse_and_validate_quiz(raw_negative)
 
     # Cas 3 : correct_index = "0" (chaîne au lieu d'entier)
-    raw_string_index = _json.dumps({
-        "questions": [
-            {
-                "prompt": "Question ?",
-                "options": ["A", "B", "C", "D"],
-                "correct_index": "0",   # chaîne invalide
-                "chapter": "Test",
-            }
-        ] * 10
-    })
+    raw_string_index = _json.dumps(
+        {
+            "questions": [
+                {
+                    "prompt": "Question ?",
+                    "options": ["A", "B", "C", "D"],
+                    "correct_index": "0",  # chaîne invalide
+                    "chapter": "Test",
+                }
+            ]
+            * 10
+        }
+    )
     with pytest.raises(LLMError, match="correct_index"):
         parse_and_validate_quiz(raw_string_index)
-

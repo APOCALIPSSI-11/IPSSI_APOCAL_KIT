@@ -19,7 +19,6 @@ class CourseSerializer(serializers.ModelSerializer):
         value = value.strip()
         if len(value) < 200:
             raise serializers.ValidationError(
-                f"Le contenu doit faire au moins 200 caractères "
-                f"(actuellement {len(value)})."
+                f"Le contenu doit faire au moins 200 caractères " f"(actuellement {len(value)})."
             )
         return value
