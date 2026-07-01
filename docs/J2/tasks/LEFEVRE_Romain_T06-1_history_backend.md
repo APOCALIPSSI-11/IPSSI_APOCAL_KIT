@@ -85,10 +85,10 @@ urlpatterns = [
 
 ## 5. Definition of Done
 
-- [ ] L'endpoint `GET /api/quizzes/` renvoie la liste des quiz de l'utilisateur connecté.
-- [ ] La liste est triée par date décroissante.
-- [ ] Le nombre de questions et le score (/10 ou null) sont inclus dans les attributs de chaque quiz de la liste.
-- [ ] Les quiz appartenant à d'autres utilisateurs ne sont pas retournés (étanchéité des requêtes SQL).
+- [x] L'endpoint `GET /api/quizzes/` renvoie la liste des quiz de l'utilisateur connecté.
+- [x] La liste est triée par date décroissante.
+- [x] Le nombre de questions et le score (/10 ou null) sont inclus dans les attributs de chaque quiz de la liste.
+- [x] Les quiz appartenant à d'autres utilisateurs ne sont pas retournés (étanchéité des requêtes SQL).
 
 ---
 
