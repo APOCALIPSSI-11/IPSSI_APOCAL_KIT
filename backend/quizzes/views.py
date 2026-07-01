@@ -143,6 +143,34 @@ class StatsView(APIView):
             for q in taken.order_by("created_at")
         ]
 
+        # Agrégation par chapitre : calcule le total de questions et le total de correctes
+        from django.db.models import Case, IntegerField, Sum, When
+
+        chapter_stats = answered.values("chapter").annotate(
+            total=Count("id"),
+            correct=Sum(
+                Case(
+                    When(selected_index=F("correct_index"), then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
+        )
+
+        chapter_results = []
+        for stat in chapter_stats:
+            total = stat["total"]
+            correct = stat["correct"] or 0
+            accuracy = round(100 * correct / total) if total else 0
+            chapter_results.append(
+                {
+                    "chapter": stat["chapter"] or "Général",
+                    "total": total,
+                    "correct": correct,
+                    "accuracy": accuracy,
+                }
+            )
+
         return Response(
             {
                 "total_quizzes": quizzes.count(),
@@ -154,6 +182,7 @@ class StatsView(APIView):
                 "questions_correct": nb_correct,
                 "accuracy": round(100 * nb_correct / nb_answered) if nb_answered else None,
                 "history": history,
+                "chapter_stats": chapter_results,
             }
         )
 
@@ -161,6 +190,21 @@ class StatsView(APIView):
 # ---------------------------------------------------------------------------
 # MVP2 — Révision des erreurs (Lot 6)
 # ---------------------------------------------------------------------------
+
+
+class QuizStatusView(APIView):
+    """Statut de génération d'un quiz (utilisé pour le polling frontend)."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses={200: OpenApiResponse(description="{ status: generating | completed }")}
+    )
+    def get(self, request, pk: int):
+        quiz = get_object_or_404(Quiz, pk=pk, user=request.user)
+        if quiz.questions.count() == 10:
+            return Response({"status": "completed"})
+        return Response({"status": "generating"})
 
 
 class MistakesView(APIView):

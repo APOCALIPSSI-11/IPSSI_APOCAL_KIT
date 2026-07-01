@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState, type DragEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateQuiz } from '@/api/llm';
+import ProgressBar from '@/components/ProgressBar';
+import { generateQuiz, getQuizStatus } from '@/api/llm';
 import { getApiErrorMessage } from '@/api/errors';
 
+const POLL_INTERVAL_MS = 5_000;
+const MAX_POLL_TICKS = 120; // garde-fou : 10 min max
 const MAX_PDF_SIZE_BYTES = 5 * 1024 * 1024;
 const LOADING_MESSAGES = [
   'Analyse du cours en cours…',
@@ -71,8 +74,64 @@ export default function UploadPage() {
     handlePdfSelection(file);
   };
 
+  const isTextInvalid = mode === 'text' && sourceText.length < 200;
+  const isPdfInvalid = mode === 'pdf' && (!pdf || pdf.size > 5 * 1024 * 1024);
+  const isSubmitDisabled = loading || !title || (mode === 'text' ? isTextInvalid : isPdfInvalid);
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Nettoyage de l'intervalle si le composant est démonté pendant le polling
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current !== null) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  const stopPolling = () => {
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const startPolling = (quizId: number) => {
+    let ticks = 0;
+    let failCount = 0;
+    const MAX_FAILS = 5;
+
+    intervalRef.current = setInterval(async () => {
+      ticks++;
+      if (ticks > MAX_POLL_TICKS) {
+        stopPolling();
+        setError("La génération a pris trop de temps. Vérifiez qu'Ollama est lancé et réessayez.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await getQuizStatus(quizId);
+        failCount = 0;
+        if (res.status === 'completed') {
+          stopPolling();
+          navigate(`/quiz/${quizId}`);
+        } else if (res.status === 'failed') {
+          stopPolling();
+          setError('La génération a échoué côté serveur.');
+          setLoading(false);
+        }
+      } catch {
+        failCount++;
+        if (failCount >= MAX_FAILS) {
+          stopPolling();
+          setError('Connexion perdue pendant la génération.');
+          setLoading(false);
+        }
+      }
+    }, POLL_INTERVAL_MS);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (isSubmitDisabled) return;
     setError(null);
 
     if (mode === 'pdf' && !pdf) {
@@ -86,15 +145,14 @@ export default function UploadPage() {
 
     setLoading(true);
     try {
-      const quiz = await generateQuiz({
+      const result = await generateQuiz({
         title,
         pdf: mode === 'pdf' ? (pdf ?? undefined) : undefined,
         source_text: mode === 'text' ? sourceText : undefined,
       });
-      navigate(`/quiz/${quiz.id}`);
+      startPolling(result.id);
     } catch (err) {
       setError(getApiErrorMessage(err, 'Échec de la génération.'));
-    } finally {
       setLoading(false);
     }
   };
@@ -236,13 +294,13 @@ export default function UploadPage() {
             </>
           )}
           {mode === 'text' && (
-            <p className="text-xs text-slate-500 mt-1">
+            <p className={`text-xs mt-1 ${sourceText.length < 200 ? 'text-amber-600' : 'text-slate-500'}`}>
               {sourceText.length} / 200 caractères minimum
             </p>
           )}
         </div>
 
-        <button type="submit" disabled={loading} className="btn-primary w-full">
+        <button type="submit" disabled={isSubmitDisabled} className="btn-primary w-full">
           {loading ? (
             <>
               <span className="animate-spin">⏳</span> {LOADING_MESSAGES[loadingMessageIndex]}
@@ -252,21 +310,14 @@ export default function UploadPage() {
           )}
         </button>
 
-        {loading && (
-          <div className="space-y-2" aria-live="polite">
-            <div className="w-full h-2 bg-slate-200 rounded overflow-hidden">
-              <div className="h-full w-1/3 bg-indigo-600 rounded animate-pulse" />
-            </div>
-            <p className="text-xs text-slate-500 text-center">
-              Traitement local avec Llama 3.2 3B : cette étape peut prendre quelques minutes.
-            </p>
-          </div>
-        )}
+        <ProgressBar active={loading} />
 
-        <p className="text-xs text-slate-500 text-center">
-          La génération peut prendre de 1 à 5 minutes selon votre machine (bien plus rapide avec un
-          GPU ou un modèle plus léger).
-        </p>
+        {!loading && (
+          <p className="text-xs text-slate-500 text-center">
+            La génération peut prendre de 1 à 5 minutes selon votre machine (bien plus rapide avec
+            un GPU ou un modèle plus léger).
+          </p>
+        )}
       </form>
     </div>
   );

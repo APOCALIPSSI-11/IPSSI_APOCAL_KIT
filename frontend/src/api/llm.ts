@@ -1,5 +1,4 @@
 import { api } from './client';
-import type { Quiz } from './quizzes';
 
 export type LLMPing = {
   backend: 'ollama' | 'mock';
@@ -14,25 +13,33 @@ export async function ping(): Promise<LLMPing> {
   return data;
 }
 
+export type GenerateQuizResult = { id: number; status: 'generating' };
+export type QuizStatus = { status: 'generating' | 'completed' | 'failed' };
+
 /**
- * Génère un quiz à partir d'un PDF ou d'un texte.
- * Renvoie le quiz complet (avec les 10 questions et leur bonne réponse).
+ * Démarre la génération asynchrone d'un quiz.
+ * Retourne immédiatement l'identifiant du quiz (202 ACCEPTED).
+ * Utiliser `getQuizStatus` pour suivre la complétion.
  */
 export async function generateQuiz(input: {
   title: string;
   pdf?: File;
   source_text?: string;
-}): Promise<Quiz> {
+}): Promise<GenerateQuizResult> {
   const form = new FormData();
   form.append('title', input.title);
   if (input.pdf) form.append('pdf', input.pdf);
   if (input.source_text) form.append('source_text', input.source_text);
 
-  const { data } = await api.post<Quiz>('/llm/generate-quiz/', form, {
+  const { data } = await api.post<GenerateQuizResult>('/llm/generate-quiz/', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
-    // La génération LLM sur CPU peut prendre plusieurs minutes : on dépasse
-    // largement le timeout axios par défaut (120 s). Aligné sur OLLAMA_TIMEOUT.
-    timeout: 600_000,
+    timeout: 30_000,
   });
+  return data;
+}
+
+/** Interroge le statut de génération d'un quiz (polling toutes les 5 s). */
+export async function getQuizStatus(quizId: number): Promise<QuizStatus> {
+  const { data } = await api.get<QuizStatus>(`/quizzes/${quizId}/status/`);
   return data;
 }
