@@ -87,10 +87,10 @@ const handleSubmit = async (e: FormEvent) => {
 
 ## 5. Definition of Done
 
-- [ ] Le bouton submit change de texte et affiche un spinner en cours de chargement.
-- [ ] Tous les champs du formulaire sont verrouillés (`disabled`) pendant la génération du quiz.
-- [ ] L'utilisateur est automatiquement redirigé vers l'URL `/quiz/:id` correspondante à la fin de la requête d'API.
-- [ ] Si la génération échoue, un message d'erreur est affiché sur la page d'upload et les champs redeviennent modifiables.
+- [x] Le bouton submit change de texte et affiche un spinner en cours de chargement.
+- [x] Tous les champs du formulaire sont verrouillés (`disabled`) pendant la génération du quiz.
+- [x] L'utilisateur est automatiquement redirigé vers l'URL `/quiz/:id` correspondante à la fin de la requête d'API.
+- [x] Si la génération échoue, un message d'erreur est affiché sur la page d'upload et les champs redeviennent modifiables.
 
 ---
 
