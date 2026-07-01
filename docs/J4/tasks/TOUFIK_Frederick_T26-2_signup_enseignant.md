@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 3
 > **Estimation** : 2h
 > **Assigné** : Frederick TOUFIK
-> **Statut** : Todo
+> **Statut** : Done
 
 ---
 
