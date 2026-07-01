@@ -146,13 +146,13 @@ class CourseAdmin(admin.ModelAdmin):
 
 ## 5. Definition of Done
 
-- [ ] Classe `Course` ajoutée dans `quizzes/models.py` avec les 6 champs spécifiés
-- [ ] Choices `Source.PDF` / `Source.TEXT` définis
-- [ ] Migration `0003_course.py` générée et versionnée
-- [ ] Migration appliquée sans erreur
-- [ ] Modèle visible dans l'admin Django
-- [ ] Création manuelle d'un Course via admin fonctionne
-- [ ] Aucune régression sur les tests existants : `pytest` OK
+- [x] Classe `Course` ajoutée dans `quizzes/models.py` avec les 6 champs spécifiés
+- [x] Choices `Source.PDF` / `Source.TEXT` définis
+- [x] Migration `0003_course.py` générée et versionnée
+- [x] Migration appliquée sans erreur
+- [x] Modèle visible dans l'admin Django
+- [x] Création manuelle d'un Course via admin fonctionne
+- [x] Aucune régression sur les tests existants : `pytest` OK
 
 ---
 
