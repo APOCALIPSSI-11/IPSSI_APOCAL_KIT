@@ -91,11 +91,11 @@ Dans la vue Django qui pilote l'interaction avec le LLM, encapsuler la logique d
 
 ## 5. Definition of Done
 
-- [ ] Les classes `Quiz` et `Question` sont définies dans `quizzes/models.py`.
-- [ ] La contrainte d'unicité composite `unique_together = [("quiz", "index")]` est en place.
-- [ ] La migration de base de données est générée et appliquée.
-- [ ] La persistance se fait dans un bloc de transaction Django `transaction.atomic()`.
-- [ ] Les tests d'intégration valident que si une erreur d'insertion SQL survient sur la question 5, aucun enregistrement `Quiz` ou `Question` n'est créé en base.
+- [x] Les classes `Quiz` et `Question` sont définies dans `quizzes/models.py`.
+- [x] La contrainte d'unicité composite `unique_together = [("quiz", "index")]` est en place.
+- [x] La migration de base de données est générée et appliquée.
+- [x] La persistance se fait dans un bloc de transaction Django `transaction.atomic()`.
+- [x] Les tests d'intégration valident que si une erreur d'insertion SQL survient sur la question 5, aucun enregistrement `Quiz` ou `Question` n'est créé en base.
 
 ---
 
