@@ -236,7 +236,6 @@ export default function UploadPage() {
                 type="file"
                 accept=".pdf,application/pdf"
                 disabled={loading}
-                required
                 className="hidden"
                 onChange={(e) => handlePdfSelection(e.target.files?.[0] ?? null)}
               />
@@ -304,7 +303,11 @@ export default function UploadPage() {
           )}
         </div>
 
-        <button type="submit" disabled={isSubmitDisabled} className="btn-primary w-full">
+        <button
+          type="submit"
+          disabled={isSubmitDisabled}
+          className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
+        >
           {loading ? (
             <>
               <span className="animate-spin">⏳</span> {LOADING_MESSAGES[loadingMessageIndex]}
