@@ -67,8 +67,20 @@ class RGPDRequestLog(models.Model):
         ("delete", "Suppression de compte"),
     ]
 
+    class Status(models.TextChoices):
+        RECEIVED = "received", "Reçue"
+        PROCESSING = "processing", "En cours"
+        ANSWERED = "answered", "Répondue"
+
     user_email = models.EmailField(help_text="Email de l'utilisateur ayant formulé la demande")
     request_type = models.CharField(max_length=10, choices=REQUEST_TYPE_CHOICES)
+    status = models.CharField(max_length=15, choices=Status.choices, default=Status.RECEIVED)
+    file_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True,
+        help_text="SHA-256 de l'archive/JSON renvoyé à l'utilisateur (intégrité de la réponse SAR).",
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
 

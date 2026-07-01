@@ -6,6 +6,8 @@
 > **Assigné** : Seer MENSAH ASSIAKOLEY (repris de Redouane ID SOUGOU)
 > **Statut** : Done
 
+> **Note / Traçabilité (01/07, re-vérification post-merge `fred`)** : le merge d'`origin/fred` avait introduit une seconde classe `TeacherDashboardView` dupliquée dans `backend/courses/views.py`, qui écrasait silencieusement celle-ci (Python ne garde que la dernière définition d'un nom de classe). La version qui restait active retournait `average_score` sur une échelle 0-10 au lieu de 0-100 et `0.0` au lieu de `None` en l'absence de données. Doublon supprimé, imports dupliqués nettoyés, tests `courses/tests.py` repassés au vert.
+
 ---
 
 ## 1. Objectif de la tâche
