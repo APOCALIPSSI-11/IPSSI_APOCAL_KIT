@@ -92,6 +92,22 @@ class SignupSerializer(serializers.ModelSerializer):
         return user
 
 
+class TeacherSignupSerializer(SignupSerializer):
+    """Inscription enseignant : rôle teacher assigné côté serveur, email vérifié d'emblée."""
+
+    def create(self, validated_data: dict) -> User:
+        password = validated_data.pop("password")
+        email = validated_data["email"]
+        user = User(username=email, **validated_data)
+        user.set_password(password)
+        user.save()
+        profile = get_or_create_profile(user)
+        profile.role = "teacher"
+        profile.email_verified = True
+        profile.save(update_fields=["role", "email_verified"])
+        return user
+
+
 class LoginSerializer(serializers.Serializer):
     """Authentification par EMAIL + mot de passe."""
 
