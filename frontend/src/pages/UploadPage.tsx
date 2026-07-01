@@ -5,7 +5,9 @@ import { generateQuiz, getQuizStatus } from '@/api/llm';
 import { getApiErrorMessage } from '@/api/errors';
 
 const POLL_INTERVAL_MS = 5_000;
-const MAX_POLL_TICKS = 120; // garde-fou : 10 min max
+// Garde-fou : 20 min max. Doit rester >= OLLAMA_TIMEOUT backend (1200 s), sinon
+// le front abandonne alors que la génération CPU est encore en cours.
+const MAX_POLL_TICKS = 240;
 const MAX_PDF_SIZE_BYTES = 5 * 1024 * 1024;
 const LOADING_MESSAGES = [
   'Analyse du cours en cours…',

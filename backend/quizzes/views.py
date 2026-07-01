@@ -202,8 +202,12 @@ class QuizStatusView(APIView):
     )
     def get(self, request, pk: int):
         quiz = get_object_or_404(Quiz, pk=pk, user=request.user)
-        if quiz.questions.count() == 10:
+        # `questions.count() == 10` couvre les quiz historiques créés avant
+        # l'ajout du champ `status` (repli de compatibilité).
+        if quiz.status == Quiz.Status.COMPLETED or quiz.questions.count() == 10:
             return Response({"status": "completed"})
+        if quiz.status == Quiz.Status.FAILED:
+            return Response({"status": "failed"})
         return Response({"status": "generating"})
 
 
