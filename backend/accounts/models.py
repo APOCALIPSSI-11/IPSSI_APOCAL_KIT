@@ -42,3 +42,30 @@ def get_or_create_profile(user) -> Profile:
     """
     profile, _ = Profile.objects.get_or_create(user=user)
     return profile
+
+
+class RGPDRequestLog(models.Model):
+    """Audit Trail RGPD (T-RGPD-01.3) : trace inaltérable des demandes SAR.
+
+    On stocke l'email en texte plutôt qu'une FK vers User : une demande de
+    suppression (droit à l'oubli, Art. 17) efface le User, mais le log
+    d'audit doit rester lisible malgré tout.
+    """
+
+    REQUEST_TYPE_CHOICES = [
+        ("export", "Export de données"),
+        ("delete", "Suppression de compte"),
+    ]
+
+    user_email = models.EmailField(help_text="Email de l'utilisateur ayant formulé la demande")
+    request_type = models.CharField(max_length=10, choices=REQUEST_TYPE_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+        verbose_name = "Log Audit RGPD"
+        verbose_name_plural = "Logs Audit RGPD"
+
+    def __str__(self) -> str:
+        return f"{self.request_type} · {self.user_email} · {self.timestamp:%Y-%m-%d %H:%M}"
