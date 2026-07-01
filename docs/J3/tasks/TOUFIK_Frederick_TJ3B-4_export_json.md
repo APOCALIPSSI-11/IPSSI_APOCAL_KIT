@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 3
 > **Estimation** : 1.5h
 > **Assigné** : Frederick TOUFIK
-> **Statut** : Todo
+> **Statut** : Done
 
 ---
 
@@ -82,10 +82,10 @@ S'assurer qu'aucun appel de type `Model.objects.all()` n'est fait sans le filtre
 
 ## 5. Definition of Done
 
-- [ ] L'appel `GET /api/accounts/export/?format=json` renvoie une réponse HTTP 200 avec le payload JSON structuré contenant les catégories de données de l'utilisateur.
-- [ ] L'appel `GET /api/accounts/export/` sans paramètre continue de renvoyer le fichier ZIP sans erreur.
-- [ ] L'isolation des données est garantie : un utilisateur authentifié ne peut exporter que ses propres données.
-- [ ] Les données de "logs" d'audit de l'utilisateur sont incluses dans la structure JSON.
+- [x] L'appel `GET /api/accounts/export/?format=json` renvoie une réponse HTTP 200 avec le payload JSON structuré contenant les catégories de données de l'utilisateur.
+- [x] L'appel `GET /api/accounts/export/` sans paramètre continue de renvoyer le fichier ZIP sans erreur.
+- [x] L'isolation des données est garantie : un utilisateur authentifié ne peut exporter que ses propres données.
+- [x] Les données de "logs" d'audit de l'utilisateur sont incluses dans la structure JSON.
 
 ---
 

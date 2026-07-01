@@ -348,24 +348,27 @@ class ChangePasswordView(APIView):
 
 
 class ExportDataView(APIView):
-    """Export RGPD — Art. 15 & 20 : toutes les données personnelles en ZIP."""
+    """Export RGPD — Art. 15 & 20 : toutes les données personnelles en ZIP ou JSON."""
 
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
         responses={
             200: OpenApiResponse(
-                description="Archive ZIP (profil_et_quizz.json + reponses_tentatives.csv)"
+                description=(
+                    "JSON structuré si ?format=json, "
+                    "sinon archive ZIP (profil_et_quizz.json + reponses_tentatives.csv)"
+                )
             )
         },
     )
     def get(self, request):
-        from quizzes.models import Quiz
+        from quizzes.models import Question, Quiz
 
         user = request.user
         profile = get_or_create_profile(user)
 
-        # --- JSON : profil + quizzes ---
+        # --- Profil + quizzes (commun aux deux formats) ---
         quizzes_data = []
         for quiz in Quiz.objects.filter(user=user).prefetch_related("questions"):
             quizzes_data.append(
@@ -387,6 +390,37 @@ class ExportDataView(APIView):
                 }
             )
 
+        # --- Détection du format souhaité (CA-J3B-1) ---
+        format_param = request.query_params.get("format", "").lower()
+        if format_param == "json":
+            answers_data = [
+                {
+                    "quiz_id": q.quiz_id,
+                    "question_index": q.index,
+                    "selected_index": q.selected_index,
+                    "correct_index": q.correct_index,
+                    "is_correct": q.selected_index == q.correct_index,
+                }
+                for q in Question.objects.filter(
+                    quiz__user=user, selected_index__isnull=False
+                ).order_by("quiz_id", "index")
+            ]
+            return Response(
+                {
+                    "user": {
+                        "email": user.email,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "role": profile.role,
+                    },
+                    "quizzes": quizzes_data,
+                    "answers": answers_data,
+                    "logs": [],
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        # --- Comportement par défaut : ZIP ---
         payload = {
             "profil": {
                 "email": user.email,
