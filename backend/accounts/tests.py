@@ -142,7 +142,7 @@ def test_export_zip_creates_answered_audit_log_with_hash(client, user):
 
     token = Token.objects.create(user=user)
     client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
-    response = client.get("/api/accounts/export/")
+    response = client.get("/api/accounts/me/export/")
 
     assert response.status_code == 200
     expected_hash = hashlib.sha256(response.content).hexdigest()
@@ -161,7 +161,7 @@ def test_export_json_creates_answered_audit_log_with_hash(client, user):
 
     token = Token.objects.create(user=user)
     client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
-    response = client.get("/api/accounts/export/?format=json")
+    response = client.get("/api/accounts/me/export/?format=json")
 
     assert response.status_code == 200
     log = RGPDRequestLog.objects.get(user_email="alice@test.com", request_type="export")
@@ -182,9 +182,36 @@ def test_export_does_not_leak_other_users_audit_logs(client, user):
 
     token = Token.objects.create(user=user)
     client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
-    response = client.get("/api/accounts/export/")
+    response = client.get("/api/accounts/me/export/")
 
     assert response.status_code == 200
     from .models import RGPDRequestLog
 
     assert not RGPDRequestLog.objects.filter(user_email="carol@test.com").exists()
+
+
+def test_export_json_does_not_leak_other_users_data(client, user):
+    # Fiche officielle J3-bis : "vérifier qu'un utilisateur ne reçoit aucune
+    # donnée d'un autre (3 tables minimum)". Ici : courses, quizzes, logs.
+    from rest_framework.authtoken.models import Token
+
+    from courses.models import Course
+    from quizzes.models import Quiz
+
+    other = User.objects.create_user(
+        username="carol", email="carol@test.com", password="motdepasse123"
+    )
+    Course.objects.create(user=other, title="Cours de Carol", content="x" * 250)
+    Quiz.objects.create(user=other, title="Quiz de Carol", score=5)
+
+    token = Token.objects.create(user=user)
+    client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
+    response = client.get("/api/accounts/me/export/?format=json")
+
+    assert response.status_code == 200
+    assert response.data["courses"] == []
+    assert response.data["quizzes"] == []
+    course_titles = [c["title"] for c in response.data["courses"]]
+    quiz_titles = [q["title"] for q in response.data["quizzes"]]
+    assert "Cours de Carol" not in course_titles
+    assert "Quiz de Carol" not in quiz_titles

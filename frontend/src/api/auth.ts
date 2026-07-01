@@ -151,6 +151,6 @@ export async function deleteAccount(password: string): Promise<void> {
  * un décodage texte/JSON.
  */
 export async function exportData(): Promise<Blob> {
-  const { data } = await api.get<Blob>('/accounts/export/', { responseType: 'blob' });
+  const { data } = await api.get<Blob>('/accounts/me/export/', { responseType: 'blob' });
   return data;
 }

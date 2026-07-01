@@ -34,5 +34,5 @@ urlpatterns = [
     path("profile/", ProfileView.as_view(), name="profile"),
     path("change-password/", ChangePasswordView.as_view(), name="change-password"),
     # RGPD — export des données personnelles (Art. 15 & 20)
-    path("export/", ExportDataView.as_view(), name="export-data"),
+    path("me/export/", ExportDataView.as_view(), name="export-data"),
 ]
