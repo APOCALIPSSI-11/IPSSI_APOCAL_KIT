@@ -126,3 +126,16 @@ export async function deleteAccount(password: string): Promise<void> {
   await api.delete('/accounts/profile/', { data: { password } });
   clearToken();
 }
+
+/**
+ * Droit d'accès (Art. 15) & portabilité (Art. 20) RGPD.
+ *
+ * Récupère l'archive ZIP (JSON + CSV) contenant toutes les données de
+ * l'utilisateur. Le backend renvoie un flux binaire : on demande donc à axios
+ * un `Blob` via `responseType: 'blob'`, sinon la réponse serait corrompue par
+ * un décodage texte/JSON.
+ */
+export async function exportData(): Promise<Blob> {
+  const { data } = await api.get<Blob>('/accounts/export/', { responseType: 'blob' });
+  return data;
+}
