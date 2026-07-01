@@ -3,7 +3,7 @@
 > **Équipe 11 · EduTutor IA** · Sprint 2 (mercredi 01/07/2026)
 > **Rédigé par** : Seer MENSAH ASSIAKOLEY (Scrum Master)
 > **Date de rédaction** : 01/07/2026
-> **Source** : [equipe-11-sprint-backlog-v2.3.xlsx](../cadrage/artefacts/equipe-11-sprint-backlog-v2.3.xlsx) (audit du 01/07) + vérification directe du code (`git log`, lecture des fichiers backend/frontend)
+> **Source** : [equipe-11-sprint-backlog-v2.3.xlsx](../../cadrage/artefacts/equipe-11-sprint-backlog-v2.3.xlsx) (audit du 01/07) + vérification directe du code (`git log`, lecture des fichiers backend/frontend)
 > **Objectif** : préparer la Sprint Review avec le PO (Mohamed Amine EL AFRIT) en distinguant ce qui est *réellement* livré de ce qui reste à faire, avant de basculer sur le Sprint 3.
 
 ---
@@ -13,7 +13,7 @@
 1. **Démo live** (10 min) : signup avec consentement RGPD → upload → génération quiz → réponse → score → export ZIP des données.
 2. **Revue des écarts** (10 min) : présenter le tableau §2 ci-dessous — ce qui était annoncé "Done" dans le backlog v2.2 vs. l'état réel du code après audit du 01/07.
 3. **Point absences/charge** (5 min) : Redouane, Azeddine, Hugo (cf. §3).
-4. **Rappel de la décision technique J3A** (→ [ADR-002](../adr/ADR-002-securisation-llm-rgpd-j3a.md), déjà Accepted) et validation du report des 2 écarts résiduels vers le Sprint 3.
+4. **Rappel de la décision technique J3A** (→ [ADR-002](../../adr/ADR-002-securisation-llm-rgpd-j3a.md), déjà Accepted) et validation du report des 2 écarts résiduels vers le Sprint 3.
 5. **Annonce perturbation J3-bis (RGPD)** et son intégration au Sprint 3 (cf. [sprint3-redispatch.md](sprint3-redispatch.md)).
 
 ---

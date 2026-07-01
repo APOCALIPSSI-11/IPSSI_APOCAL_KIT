@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 2
 > **Estimation** : 2h
 > **Assigné** : Frederick TOUFIK
-> **Statut** : To Do
+> **Statut** : Done
 
 ---
 
@@ -123,12 +123,12 @@ Dans `frontend/src/pages/UploadPage.tsx`, importer et placer `<ProgressBar activ
 
 ## 5. Definition of Done
 
-- [ ] Le fichier `frontend/src/components/ProgressBar.tsx` est créé.
-- [ ] La barre avance de manière non linéaire (rapide puis lente) quand `active={true}`.
-- [ ] Les messages d'étapes changent selon la progression simulée.
-- [ ] La barre se bloque à 95 % et ne dépasse jamais 100 % avant la réponse API.
-- [ ] La barre disparaît (retour à null) et se réinitialise à 0 % quand `active={false}`.
-- [ ] Pas de fuite mémoire : `clearInterval` appelé dans le return du `useEffect`.
+- [x] Le fichier `frontend/src/components/ProgressBar.tsx` est créé.
+- [x] La barre avance de manière non linéaire (rapide puis lente) quand `active={true}`.
+- [x] Les messages d'étapes changent selon la progression simulée.
+- [x] La barre se bloque à 95 % et ne dépasse jamais 100 % avant la réponse API.
+- [x] La barre disparaît (retour à null) et se réinitialise à 0 % quand `active={false}`.
+- [x] Pas de fuite mémoire : `clearInterval` appelé dans le return du `useEffect`.
 
 ---
 

@@ -3,7 +3,7 @@
 > **Équipe 11 · EduTutor IA** · Sprint 3
 > **Rédigé par** : Seer MENSAH ASSIAKOLEY (Scrum Master)
 > **Date** : 01/07/2026
-> **Dépend de** : [sprint2-revue.md](../J3/sprint2-revue.md) (écarts constatés), perturbation [J3-bis RGPD](https://mohamedelafrit.com/teaching/APOCALIPSSI/pages/perturbations/j3bis-rgpd.php)
+> **Dépend de** : [sprint2-revue.md](sprint2-revue.md) (écarts constatés), perturbation [J3-bis RGPD](https://mohamedelafrit.com/teaching/APOCALIPSSI/pages/perturbations/j3bis-rgpd.php)
 
 ---
 
@@ -14,7 +14,7 @@
 | **Redouane ID SOUGOU** | Aucun commit depuis le Sprint 1 (0 commit sur tout l'historique du dépôt) | Retiré de la planification active. Ses tâches Sprint 3 (T-T1.2) sont réaffectées. |
 | **Azeddine AMARI** | 1 seul commit sur tout l'historique, aucune activité Sprint 2 | Retiré de la planification active. Ses tâches Sprint 3 (T-26.1) et le reliquat Sprint 2 (T-SEC-01) sont réaffectés. |
 | **Hugo HAVET** | contribution réelle vérifiée (export ZIP RGPD, signup, password reset) | **Charge allégée, pas retiré** : passe de 2h de code (T-26.3) à 2.5h de tâches de rédaction non-bloquantes (politique de rétention + lettre de réponse SAR), sans dépendance critique du chemin. |
-| **Romain LEFEVRE** | Annoncé "a fini ses tâches" | **Vérifié dans le code** : T-SEC-03 (tests adversariaux) et T-11.4 (agrégation par chapitre) sont bien présents et testés (cf. [sprint2-revue.md](../J3/sprint2-revue.md) §2). Conserve son rôle QA, reçoit une tâche de vérification légère pour le Sprint 3. |
+| **Romain LEFEVRE** | Annoncé "a fini ses tâches" | **Vérifié dans le code** : T-SEC-03 (tests adversariaux) et T-11.4 (agrégation par chapitre) sont bien présents et testés (cf. [sprint2-revue.md](sprint2-revue.md) §2). Conserve son rôle QA, reçoit une tâche de vérification légère pour le Sprint 3. |
 | **Van Anh NGUYEN, Frederick TOUFIK, Seer MENSAH ASSIAKOLEY** | Actifs, capacité disponible | Absorbent les réaffectations ci-dessus, répartition détaillée §4. |
 
 **Capacité réelle du sprint** : la capacité nominale du classeur (7 × 3.5 h ≈ 24.5 h-pers) suppose 7 contributeurs actifs. En pratique, 2 membres n'apportent aucune capacité fiable (Redouane, Azeddine) et 1 membre est réduit (Hugo). La capacité réelle repose donc sur **5 personnes** avec une charge volontairement inégale (Seer absorbe le plus gros du report, comme demandé).
@@ -38,7 +38,7 @@
 
 > ⚠️ **Attention en daily** : la persona de cette perturbation s'appelle *Hugo Petit* — à ne pas confondre avec **Hugo Havet**, membre de l'équipe, qui rédige justement la lettre de réponse qui lui est adressée.
 
-**Ce qui est déjà acquis** (vérifié dans le code, cf. [sprint2-revue.md](../J3/sprint2-revue.md) §2) :
+**Ce qui est déjà acquis** (vérifié dans le code, cf. [sprint2-revue.md](sprint2-revue.md) §2) :
 - Endpoint d'export existant et fonctionnel (`GET /api/accounts/export/`, ZIP contenant JSON + CSV) → couvre déjà CA-J3B-2 (catégories user/quizzes/réponses) et CA-J3B-3 (≥ 2 formats) et CA-J3B-4 (bouton frontend actif).
 - Il manque : la conformité *littérale* de CA-J3B-1 (l'énoncé attend une réponse JSON structurée en 200 ; l'implémentation actuelle renvoie un binaire ZIP), la politique de rétention, l'audit trail complet, et la lettre de réponse.
 

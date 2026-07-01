@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 3
 > **Estimation** : 1.5h
 > **Assigné** : Hugo HAVET
-> **Statut** : Todo
+> **Statut** : Done
 
 ---
 
@@ -50,8 +50,8 @@ Présenter le document au Scrum Master / DPO de l'équipe pour relecture.
 
 ## 5. Definition of Done
 
-- [ ] Le fichier `docs/J3/politique-retention.md` existe et contient les trois sections obligatoires.
-- [ ] Le contenu est clair, synthétique (tient sur 1 page) et rédigé en français.
-- [ ] La base légale de l'article 6 du RGPD est explicitement mentionnée.
-- [ ] La procédure d'exercice du droit à l'oubli (Art. 17) est documentée.
+- [x] Le fichier `docs/J3/politique-retention.md` existe et contient les trois sections obligatoires.
+- [x] Le contenu est clair, synthétique (tient sur 1 page) et rédigé en français.
+- [x] La base légale de l'article 6 du RGPD est explicitement mentionnée.
+- [x] La procédure d'exercice du droit à l'oubli (Art. 17) est documentée.
 - [ ] Le document est validé par le reste de l'équipe.
