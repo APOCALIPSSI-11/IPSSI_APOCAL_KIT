@@ -17,7 +17,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { changePassword, deleteAccount, updateProfile } from '@/api/auth';
+import { changePassword, deleteAccount, exportData, updateProfile } from '@/api/auth';
 import { getApiErrorMessage } from '@/api/errors';
 
 export default function ProfilePage() {
@@ -45,6 +45,32 @@ export default function ProfilePage() {
   const [delConfirm, setDelConfirm] = useState(false);
   const [delErr, setDelErr] = useState<string | null>(null);
   const [delLoading, setDelLoading] = useState(false);
+
+  // --- RGPD : export des données (Art. 15 & 20) ---
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportErr, setExportErr] = useState<string | null>(null);
+
+  const handleExport = async () => {
+    setExportErr(null);
+    setIsExporting(true);
+    try {
+      const blob = await exportData();
+      // Simule un téléchargement : ancre <a> temporaire pointant vers une URL
+      // objet en mémoire, clic programmatique, puis nettoyage.
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'edututor_export_donnees.zip');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url); // libère la mémoire du blob
+    } catch (err) {
+      setExportErr(getApiErrorMessage(err, 'Export impossible. Réessayez.'));
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleInfo = async (e: FormEvent) => {
     e.preventDefault();
@@ -236,11 +262,12 @@ export default function ProfilePage() {
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
-            disabled
-            title="À implémenter (J3-bis) — droit à la portabilité RGPD"
-            className="btn-secondary opacity-60 cursor-not-allowed"
+            onClick={handleExport}
+            disabled={isExporting}
+            title="Télécharger toutes mes données (JSON + CSV) — RGPD Art. 15 & 20"
+            className="btn-secondary disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Exporter mes données (bientôt)
+            {isExporting ? '⏳ Exportation…' : 'Exporter mes données'}
           </button>
           <button
             type="button"
@@ -251,6 +278,11 @@ export default function ProfilePage() {
             Signaler un contenu (bientôt)
           </button>
         </div>
+        {exportErr && (
+          <div className="mt-3 p-3 bg-rose-50 border-l-4 border-rose-500 text-sm text-rose-900 rounded">
+            {exportErr}
+          </div>
+        )}
       </section>
 
       {/* Zone 3 : danger */}
