@@ -94,6 +94,7 @@ export type AdminUser = {
   is_active: boolean;
   is_staff: boolean;
   is_superuser: boolean;
+  role: 'student' | 'teacher';
   email_verified: boolean;
   quiz_count: number;
 };

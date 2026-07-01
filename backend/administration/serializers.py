@@ -37,6 +37,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
     email_verified = serializers.SerializerMethodField()
     quiz_count = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -49,6 +50,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
             "is_active",
             "is_staff",
             "is_superuser",
+            "role",
             "email_verified",
             "quiz_count",
         ]
@@ -59,6 +61,9 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
     def get_quiz_count(self, obj) -> int:
         return obj.quizzes.count()
+
+    def get_role(self, obj) -> str:
+        return get_or_create_profile(obj).role
 
 
 class AdminUserUpdateSerializer(serializers.Serializer):
