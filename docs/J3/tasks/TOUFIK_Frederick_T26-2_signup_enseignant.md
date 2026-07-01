@@ -3,8 +3,8 @@
 > **User Story** : US-26 — *En tant qu'enseignante, je veux créer mon compte immédiatement sans validation manuelle, afin de tester l'outil sans délai.*
 > **Sprint** : Sprint 3
 > **Estimation** : 2h
-> **Assigné** : Frederick TOUFIK (repris d'Azeddine AMARI)
-> **Statut** : Todo
+> **Assigné** : Frederick TOUFIK
+> **Statut** : Done
 
 ---
 
@@ -12,11 +12,11 @@
 
 Créer un endpoint `POST /api/accounts/signup-enseignant/` public qui enregistre un compte avec le rôle `teacher` sans exiger de validation manuelle ni de vérification d'email préalable. L'objectif est d'éliminer le moment de décrochage identifié sur le parcours de Mme Lefèvre (étape 2) : un enseignant qui découvre l'outil doit pouvoir démarrer immédiatement.
 
-**Dépendance bloquante** : [T-26.1](TOUFIK_Frederick_T26-1_role_user.md) (Frederick TOUFIK) doit être terminée avant de démarrer cette tâche — le champ `role` sur le modèle `User`/`Profile` doit exister en base.
+**Dépendance bloquante** : T-26.1 (Azeddine AMARI) doit être terminée avant de démarrer cette tâche — le champ `role` sur le modèle `User`/`Profile` doit exister en base.
 
 ---
 
-## 2. Contexte du code actuel
+## 2. Contexte du code actueld 
 
 | Fichier | Rôle | À modifier ? |
 |---|---|---|
@@ -132,6 +132,6 @@ path("signup-enseignant/", TeacherSignupView.as_view(), name="signup-enseignant"
 
 ## 6. Pièges à éviter
 
-1. **Dépendance T-26.1 non vérifiée** : Si `profile.role` n'existe pas encore en base (T-26.1 non appliquée), l'assignation lèvera une erreur silencieuse ou une `AttributeError`. Toujours confirmer que la migration T-26.1 a été appliquée avant de tester.
+1. **Dépendance T-26.1 non vérifiée** : Si `profile.role` n'existe pas encore en base (T-26.1 non appliquée), l'assignation lèvera une erreur silencieuse ou une `AttributeError`. Toujours confirmer que la migration T-26.1 a été appliquée (`python manage.py migrate`) avant de tester.
 2. **Email de vérification non inhibé** : Ne pas appeler `send_verification_email()` pour un compte enseignant — cela ajouterait une friction manuelle que l'US-26 cherche précisément à supprimer. Positionner `email_verified = True` dans `create()` du sérialiseur.
 3. **Injection de rôle par le client** : Ne jamais exposer le champ `role` dans les `fields` du sérialiseur. Le rôle `teacher` doit être assigné exclusivement côté serveur dans `create()`, pour empêcher un utilisateur ordinaire de s'attribuer des droits enseignant via le payload JSON.

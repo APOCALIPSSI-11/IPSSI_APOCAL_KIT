@@ -3,8 +3,8 @@
 > **User Story** : Reliquat J3 — *Sécurisation LLM (perturbation J3A)*
 > **Sprint** : Sprint 3
 > **Estimation** : 1h
-> **Assigné** : Frederick TOUFIK (repris d'Azeddine AMARI)
-> **Statut** : Todo
+> **Assigné** : Frederick TOUFIK 
+> **Statut** : Done
 
 ---
 
@@ -75,10 +75,10 @@ Lancer les tests d'intégration/unitaires liés à Ollama pour vérifier que le 
 
 ## 5. Definition of Done
 
-- [ ] L'appel d'API vers Ollama utilise `/api/chat` avec des rôles distincts pour le système et l'utilisateur.
-- [ ] L'extraction de la réponse gère correctement le format JSON renvoyé par `/api/chat`.
-- [ ] Aucun appel vers `/api/generate` n'est conservé dans le client Ollama.
-- [ ] Les tests LLM passent sans régression.
+- [x] L'appel d'API vers Ollama utilise `/api/chat` avec des rôles distincts pour le système et l'utilisateur.
+- [x] L'extraction de la réponse gère correctement le format JSON renvoyé par `/api/chat`.
+- [x] Aucun appel vers `/api/generate` n'est conservé dans le client Ollama.
+- [ ] Les tests LLM passent sans régression. *(à valider en environnement avec Ollama actif)*
 
 ---
 
