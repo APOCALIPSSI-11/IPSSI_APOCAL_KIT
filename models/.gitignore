@@ -1,0 +1,5 @@
+# Les poids réels (plusieurs Go) ne sont jamais versionnés dans Git.
+# Ils sont ajoutés à l'archive de livraison au moment du packaging (cf README.md).
+*.gguf
+*.tar
+*.bin
