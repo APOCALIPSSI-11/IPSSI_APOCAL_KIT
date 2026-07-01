@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 1 / Résolution Perturbation J2
 > **Estimation** : 2h
 > **Assigné** : Frederick TOUFIK + Seer MENSAH ASSIAKOLEY + Thi Van Anh NGUYEN 
-> **Statut** : Todo (Planifié pour Sprint 2)
+> **Statut** : Done (réalisé en avance sur Sprint 2, cf. [docs/on-premise/](../../on-premise/), scripts/install.sh, scripts/install.ps1)
 
 ---
 
@@ -83,10 +83,10 @@ Créer le fichier `docs/on-premise/install.md` détaillant les étapes pas-à-pa
 
 ## 5. Definition of Done
 
-- [ ] La structure de fichiers du pack de livraison on-premise est définie et documentée.
-- [ ] Le guide d'installation `install.md` et les prérequis `prerequisites.md` sont rédigés.
-- [ ] Le script d'installation automatique vérifie les dépendances système et charge le modèle local.
-- [ ] La procédure de rollback de modèle est documentée, testée et validée (réversibilité complète < 2 minutes).
+- [x] La structure de fichiers du pack de livraison on-premise est définie et documentée (cf. [install.md §1](../../on-premise/install.md), [models/README.md](../../../models/README.md)).
+- [x] Le guide d'installation `install.md` et les prérequis `prerequisites.md` sont rédigés.
+- [x] Le script d'installation automatique vérifie les dépendances système et charge le modèle local (`scripts/install.sh` / `scripts/install.ps1`).
+- [x] La procédure de rollback de modèle est documentée, testée et validée (réversibilité complète < 2 minutes) — testée en conditions réelles : édition `.env` + `docker compose restart backend` = **15 secondes** (modèle déjà en cache), confirmé via `GET /api/llm/ping/` (`model: llama3.1:8b`, `model_loaded: true`).
 
 ---
 

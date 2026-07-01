@@ -1,0 +1,11 @@
+# Tier Enterprise — gemma-4-31b-it, alias Ollama `gemma4:31b` (ADR-0001)
+#
+# SQUELETTE : à remplacer par l'export réel lors de la préparation du pack de
+# livraison (voir models/README.md). Une fois les poids copiés dans ce dossier,
+# la ligne FROM doit pointer vers le fichier .gguf local, par exemple :
+#
+#   FROM ./gemma4-31b-q4_0.gguf
+#
+# Ne JAMAIS remplacer par `FROM gemma4:31b` seul chez le client : cela
+# déclencherait un `ollama pull` réseau, incompatible avec un site air-gapped.
+FROM ./gemma4-31b.gguf
