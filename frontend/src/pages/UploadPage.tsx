@@ -1,20 +1,89 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type DragEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateQuiz } from '@/api/llm';
 import { getApiErrorMessage } from '@/api/errors';
+
+const MAX_PDF_SIZE_BYTES = 5 * 1024 * 1024;
+const LOADING_MESSAGES = [
+  'Analyse du cours en cours…',
+  'Construction des 10 QCM…',
+  'Vérification de la cohérence des réponses…',
+  'Presque terminé, merci de patienter…',
+];
 
 export default function UploadPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [mode, setMode] = useState<'pdf' | 'text'>('text');
   const [pdf, setPdf] = useState<File | null>(null);
+  const [isDraggingPdf, setIsDraggingPdf] = useState(false);
   const [sourceText, setSourceText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const pdfInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingMessageIndex(0);
+      return;
+    }
+    const interval = window.setInterval(() => {
+      setLoadingMessageIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2400);
+    return () => window.clearInterval(interval);
+  }, [loading]);
+
+  const validatePdfFile = (file: File): string | null => {
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      return 'Seuls les fichiers PDF (.pdf) sont acceptés.';
+    }
+    if (file.size > MAX_PDF_SIZE_BYTES) {
+      return 'Le fichier dépasse 5 Mo. Réduisez sa taille puis réessayez.';
+    }
+    return null;
+  };
+
+  const handlePdfSelection = (file: File | null) => {
+    if (!file) {
+      setPdf(null);
+      return;
+    }
+
+    const validationError = validatePdfFile(file);
+    if (validationError) {
+      setPdf(null);
+      setError(validationError);
+      return;
+    }
+
+    setError(null);
+    setPdf(file);
+  };
+
+  const handlePdfDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (loading) return;
+    setIsDraggingPdf(false);
+
+    const file = e.dataTransfer.files?.[0] ?? null;
+    handlePdfSelection(file);
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (mode === 'pdf' && !pdf) {
+      setError('Ajoutez un PDF valide (≤ 5 Mo) pour lancer la génération.');
+      return;
+    }
+    if (mode === 'text' && sourceText.trim().length < 200) {
+      setError('Le texte doit contenir au moins 200 caractères.');
+      return;
+    }
+
     setLoading(true);
     try {
       const quiz = await generateQuiz({
@@ -49,6 +118,7 @@ export default function UploadPage() {
           <input
             type="text"
             required
+            disabled={loading}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Ex. Histoire — Révolution française"
@@ -60,7 +130,11 @@ export default function UploadPage() {
           <div className="flex gap-2 mb-3">
             <button
               type="button"
-              onClick={() => setMode('text')}
+              disabled={loading}
+              onClick={() => {
+                setMode('text');
+                setError(null);
+              }}
               className={`px-3 py-1 rounded text-sm font-medium ${
                 mode === 'text'
                   ? 'bg-indigo-600 text-white'
@@ -71,7 +145,11 @@ export default function UploadPage() {
             </button>
             <button
               type="button"
-              onClick={() => setMode('pdf')}
+              disabled={loading}
+              onClick={() => {
+                setMode('pdf');
+                setError(null);
+              }}
               className={`px-3 py-1 rounded text-sm font-medium ${
                 mode === 'pdf'
                   ? 'bg-indigo-600 text-white'
@@ -85,6 +163,7 @@ export default function UploadPage() {
           {mode === 'text' ? (
             <textarea
               required
+              disabled={loading}
               rows={10}
               minLength={200}
               value={sourceText}
@@ -93,13 +172,68 @@ export default function UploadPage() {
               className="input"
             />
           ) : (
-            <input
-              type="file"
-              accept=".pdf,application/pdf"
-              required
-              onChange={(e) => setPdf(e.target.files?.[0] ?? null)}
-              className="input"
-            />
+            <>
+              <input
+                ref={pdfInputRef}
+                type="file"
+                accept=".pdf,application/pdf"
+                disabled={loading}
+                required
+                className="hidden"
+                onChange={(e) => handlePdfSelection(e.target.files?.[0] ?? null)}
+              />
+
+              <div
+                role="button"
+                tabIndex={0}
+                aria-disabled={loading}
+                onClick={() => {
+                  if (loading) return;
+                  pdfInputRef.current?.click();
+                }}
+                onKeyDown={(e) => {
+                  if (loading) return;
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    pdfInputRef.current?.click();
+                  }
+                }}
+                onDragEnter={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (loading) return;
+                  setIsDraggingPdf(true);
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (loading) return;
+                  setIsDraggingPdf(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (loading) return;
+                  setIsDraggingPdf(false);
+                }}
+                onDrop={handlePdfDrop}
+                className={`rounded-md border-2 border-dashed p-6 text-center transition ${
+                  isDraggingPdf
+                    ? 'border-indigo-500 bg-indigo-50'
+                    : 'border-slate-300 bg-slate-50 hover:bg-slate-100'
+                  } ${loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <p className="text-sm font-medium text-slate-700">
+                  Glissez-déposez votre PDF ici, ou cliquez pour choisir un fichier
+                </p>
+                <p className="text-xs text-slate-500 mt-1">Format accepté : .pdf • Taille max : 5 Mo</p>
+                {pdf && (
+                  <p className="text-xs text-emerald-700 mt-3">
+                    Fichier sélectionné : {pdf.name} ({(pdf.size / (1024 * 1024)).toFixed(2)} Mo)
+                  </p>
+                )}
+              </div>
+            </>
           )}
           {mode === 'text' && (
             <p className="text-xs text-slate-500 mt-1">
@@ -111,13 +245,23 @@ export default function UploadPage() {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? (
             <>
-              <span className="animate-spin">⏳</span> Génération en cours… (1 à 5 min sur CPU,
-              patientez)
+              <span className="animate-spin">⏳</span> {LOADING_MESSAGES[loadingMessageIndex]}
             </>
           ) : (
             <>🚀 Générer le quiz</>
           )}
         </button>
+
+        {loading && (
+          <div className="space-y-2" aria-live="polite">
+            <div className="w-full h-2 bg-slate-200 rounded overflow-hidden">
+              <div className="h-full w-1/3 bg-indigo-600 rounded animate-pulse" />
+            </div>
+            <p className="text-xs text-slate-500 text-center">
+              Traitement local avec Llama 3.2 3B : cette étape peut prendre quelques minutes.
+            </p>
+          </div>
+        )}
 
         <p className="text-xs text-slate-500 text-center">
           La génération peut prendre de 1 à 5 minutes selon votre machine (bien plus rapide avec un
