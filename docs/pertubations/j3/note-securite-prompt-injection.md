@@ -4,7 +4,7 @@
 > **Périmètre** : pipeline de génération de quiz EduTutor IA (`backend/llm/`)
 > **Rédigé par** : Seer MENSAH ASSIAKOLEY
 > **Date** : 01/07/2026 · **Version** : 1.0
-> **Lié à** : [ADR-002](../adr/ADR-002-securisation-llm-rgpd-j3a.md) (décision d'architecture), tests dans [backend/llm/tests.py](../../backend/llm/tests.py)
+> Lié à : [ADR-002](../../adr/ADR-002-securisation-llm-rgpd-j3a.md) (décision d'architecture), tests dans [test_adversarial.py](../../../backend/llm/tests/adversarial/test_adversarial.py)
 
 ---
 
