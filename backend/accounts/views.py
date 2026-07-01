@@ -357,12 +357,24 @@ class ExportDataView(APIView):
         },
     )
     def get(self, request):
+        from courses.models import Course
         from quizzes.models import Question, Quiz
 
         user = request.user
         profile = get_or_create_profile(user)
 
-        # --- Profil + quizzes (commun aux deux formats) ---
+        # --- Cours/textes uploadés (CA-J3B-2, catégorie "cours") ---
+        courses_data = [
+            {
+                "id": course.id,
+                "title": course.title,
+                "content": course.content,
+                "created_at": course.created_at.isoformat(),
+            }
+            for course in Course.objects.filter(user=user)
+        ]
+
+        # --- Quizzes (commun aux deux formats) ---
         quizzes_data = []
         for quiz in Quiz.objects.filter(user=user).prefetch_related("questions"):
             quizzes_data.append(
@@ -383,6 +395,26 @@ class ExportDataView(APIView):
                     ],
                 }
             )
+
+        # --- Logs d'audit RGPD (CA-J3B-2, catégorie "logs") : uniquement les
+        # demandes SAR antérieures de cet utilisateur — le log de l'export en
+        # cours n'y figure pas encore, puisqu'il est créé après coup une fois
+        # le hash de CE payload calculé (sinon le hash se référencerait lui-même).
+        logs_data = [
+            {
+                "request_type": log.request_type,
+                "status": log.status,
+                "timestamp": log.timestamp.isoformat(),
+                "file_hash": log.file_hash,
+            }
+            for log in RGPDRequestLog.objects.filter(user_email=user.email)
+        ]
+
+        # --- Signalements (CA-J3B-2, catégorie "signalements") : la fonction
+        # "Signaler un contenu/un quiz" n'est pas encore implémentée (prévue
+        # J4, cf. TODO dans ProfilePage.tsx) — catégorie exposée vide plutôt
+        # que silencieusement omise, pour rester honnête sur le périmètre.
+        signalements_data = []
 
         # --- Détection du format souhaité (CA-J3B-1) ---
         format_param = request.query_params.get("format", "").lower()
@@ -405,10 +437,13 @@ class ExportDataView(APIView):
                     "first_name": user.first_name,
                     "last_name": user.last_name,
                     "role": profile.role,
+                    "date_joined": user.date_joined.isoformat(),
                 },
+                "courses": courses_data,
                 "quizzes": quizzes_data,
                 "answers": answers_data,
-                "logs": [],
+                "signalements": signalements_data,
+                "logs": logs_data,
             }
             file_hash = hashlib.sha256(
                 json.dumps(export_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
@@ -431,7 +466,10 @@ class ExportDataView(APIView):
                 "date_joined": user.date_joined.isoformat(),
                 "email_verified": profile.email_verified,
             },
+            "courses": courses_data,
             "quizzes": quizzes_data,
+            "signalements": signalements_data,
+            "logs": logs_data,
         }
 
         # --- CSV : réponses par question ---
