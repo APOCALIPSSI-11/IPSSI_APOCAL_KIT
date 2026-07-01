@@ -87,13 +87,20 @@ export default function ProfilePage() {
   const handleDelete = async (e: FormEvent) => {
     e.preventDefault();
     setDelErr(null);
+
+    if (!delConfirm) {
+      setDelErr('Veuillez confirmer que vous comprenez le caractère irréversible.');
+      return;
+    }
+
     setDelLoading(true);
     try {
       await deleteAccount(delPwd);
       await refresh(); // token effacé -> l'utilisateur passe à null
-      navigate('/', { replace: true });
+      navigate('/login', { replace: true });
     } catch (err) {
       setDelErr(getApiErrorMessage(err, 'Suppression impossible.'));
+    } finally {
       setDelLoading(false);
     }
   };
@@ -266,6 +273,7 @@ export default function ProfilePage() {
             <input
               type="password"
               required
+              disabled={delLoading}
               autoComplete="current-password"
               value={delPwd}
               onChange={(e) => setDelPwd(e.target.value)}
@@ -275,6 +283,7 @@ export default function ProfilePage() {
           <label className="flex items-center gap-2 text-sm text-slate-700">
             <input
               type="checkbox"
+              disabled={delLoading}
               checked={delConfirm}
               onChange={(e) => setDelConfirm(e.target.checked)}
             />

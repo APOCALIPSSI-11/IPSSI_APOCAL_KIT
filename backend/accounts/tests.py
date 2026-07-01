@@ -108,3 +108,24 @@ def test_logout_invalidates_token(client, user):
     assert response.status_code == 204
     # Le token n'existe plus
     assert not Token.objects.filter(key=token.key).exists()
+
+
+def test_account_deletion_creates_rgpd_audit_log(client, user):
+    # T-RGPD-01.3 : la suppression de compte doit journaliser un audit trail
+    # RGPD, avec l'email conservé même après le hard delete du User.
+    from rest_framework.authtoken.models import Token
+
+    from .models import RGPDRequestLog
+
+    token = Token.objects.create(user=user)
+    client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
+    response = client.delete(
+        "/api/accounts/profile/",
+        {"password": "motdepasse123"},
+        format="json",
+    )
+    assert response.status_code == 204
+    assert not User.objects.filter(email="alice@test.com").exists()
+
+    log = RGPDRequestLog.objects.get(user_email="alice@test.com", request_type="delete")
+    assert log.timestamp is not None
