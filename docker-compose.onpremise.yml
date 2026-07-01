@@ -1,0 +1,34 @@
+# ============================================================================
+# IPSSI_APOCAL_KIT — Override ON-PREMISE (livraison client, TJ2.4)
+# ----------------------------------------------------------------------------
+# Surcharge à empiler PAR-DESSUS docker-compose.yml + docker-compose.prod.yml
+# pour une installation chez un établissement client, air-gapped (sans accès
+# Internet sortant obligatoire côté LLM).
+#
+# Différences avec docker-compose.prod.yml (VPS édition SaaS) :
+#   - Ollama n'est plus optionnel : c'est LE backend LLM du client (souveraineté
+#     RGPD, cf. ADR-0001). Toujours démarré, jamais derrière un profil cloud.
+#   - Le dossier ./models (poids pré-téléchargés du pack de livraison, un
+#     sous-dossier par tier) est monté en lecture seule dans le conteneur
+#     Ollama, pour import 100% local via `ollama create` (jamais `ollama pull`
+#     au premier démarrage — cf. docs/on-premise/prerequisites.md, piège #1).
+#
+# Lancement (voir scripts/install.sh / install.ps1 qui orchestrent tout) :
+#   docker compose \
+#     -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.onpremise.yml \
+#     --profile ollama up -d
+# ============================================================================
+
+services:
+
+  ollama:
+    # Toujours actif chez le client on-premise (contrairement au VPS SaaS où
+    # Ollama est optionnel derrière le profil "ollama"). `!reset` efface la
+    # valeur héritée de docker-compose.prod.yml (sinon les profils fusionnent).
+    profiles: !reset []
+    volumes:
+      - ollama-data:/root/.ollama
+      - ./models:/models:ro
+
+volumes:
+  ollama-data:
