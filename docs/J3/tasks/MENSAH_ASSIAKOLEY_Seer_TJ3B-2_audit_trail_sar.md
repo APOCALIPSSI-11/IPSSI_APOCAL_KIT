@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 3
 > **Estimation** : 2h
 > **Assigné** : Seer MENSAH ASSIAKOLEY
-> **Statut** : Todo
+> **Statut** : Done
 
 ---
 
@@ -95,10 +95,10 @@ python manage.py migrate accounts
 
 ## 5. Definition of Done
 
-- [ ] Les nouveaux champs `status` et `file_hash` sont ajoutés avec succès en base de données.
-- [ ] Chaque export de données génère un log d'audit dans `RGPDRequestLog` avec `request_type = 'export'` et `status = 'answered'`.
-- [ ] Le champ `file_hash` contient l'empreinte SHA-256 correcte de l'export généré.
-- [ ] Les logs d'audit sont strictement isolés par utilisateur.
+- [x] Les nouveaux champs `status` et `file_hash` sont ajoutés avec succès en base de données.
+- [x] Chaque export de données génère un log d'audit dans `RGPDRequestLog` avec `request_type = 'export'` et `status = 'answered'`.
+- [x] Le champ `file_hash` contient l'empreinte SHA-256 correcte de l'export généré.
+- [x] Les logs d'audit sont strictement isolés par utilisateur.
 
 ---
 

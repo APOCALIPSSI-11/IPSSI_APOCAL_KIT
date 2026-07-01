@@ -12,6 +12,7 @@ Endpoints d'authentification (Lot 3 : email-identifiant + validation + reset).
 """
 
 import csv
+import hashlib
 import io
 import json
 import logging
@@ -315,13 +316,6 @@ class ProfileView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# [TODO T-RGPD-01.1 — Frederick TOUFIK] Quand ExportUserDataView.get() sera
-# implémentée, journaliser l'export dedans avec :
-#   RGPDRequestLog.objects.create(user_email=request.user.email,
-#       request_type="export", ip_address=request.META.get("REMOTE_ADDR"))
-# (RGPDRequestLog est déjà importé ci-dessus, cf. T-RGPD-01.3.)
-
-
 class ChangePasswordView(APIView):
     """Changement de mot de passe (en étant connecté, avec l'ancien mot de passe)."""
 
@@ -405,20 +399,28 @@ class ExportDataView(APIView):
                     quiz__user=user, selected_index__isnull=False
                 ).order_by("quiz_id", "index")
             ]
-            return Response(
-                {
-                    "user": {
-                        "email": user.email,
-                        "first_name": user.first_name,
-                        "last_name": user.last_name,
-                        "role": profile.role,
-                    },
-                    "quizzes": quizzes_data,
-                    "answers": answers_data,
-                    "logs": [],
+            export_payload = {
+                "user": {
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "role": profile.role,
                 },
-                status=status.HTTP_200_OK,
+                "quizzes": quizzes_data,
+                "answers": answers_data,
+                "logs": [],
+            }
+            file_hash = hashlib.sha256(
+                json.dumps(export_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+            ).hexdigest()
+            RGPDRequestLog.objects.create(
+                user_email=user.email,
+                request_type="export",
+                status=RGPDRequestLog.Status.ANSWERED,
+                file_hash=file_hash,
+                ip_address=request.META.get("REMOTE_ADDR"),
             )
+            return Response(export_payload, status=status.HTTP_200_OK)
 
         # --- Comportement par défaut : ZIP ---
         payload = {
@@ -464,8 +466,17 @@ class ExportDataView(APIView):
             zf.writestr("profil_et_quizz.json", json.dumps(payload, ensure_ascii=False, indent=2))
             zf.writestr("reponses_tentatives.csv", csv_buffer.getvalue())
 
-        zip_buffer.seek(0)
+        zip_bytes = zip_buffer.getvalue()
+        file_hash = hashlib.sha256(zip_bytes).hexdigest()
+        RGPDRequestLog.objects.create(
+            user_email=user.email,
+            request_type="export",
+            status=RGPDRequestLog.Status.ANSWERED,
+            file_hash=file_hash,
+            ip_address=request.META.get("REMOTE_ADDR"),
+        )
+
         filename = f"export_{user.id}_{date_str}.zip"
-        response = HttpResponse(zip_buffer.read(), content_type="application/zip")
+        response = HttpResponse(zip_bytes, content_type="application/zip")
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response

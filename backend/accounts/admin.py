@@ -9,9 +9,9 @@ from .models import RGPDRequestLog
 class RGPDRequestLogAdmin(admin.ModelAdmin):
     """Audit Trail RGPD en lecture seule (T-RGPD-01.3) : toute modification est interdite."""
 
-    list_display = ["user_email", "request_type", "timestamp", "ip_address"]
-    readonly_fields = ["user_email", "request_type", "timestamp", "ip_address"]
-    list_filter = ["request_type"]
+    list_display = ["user_email", "request_type", "status", "timestamp", "ip_address"]
+    readonly_fields = ["user_email", "request_type", "status", "file_hash", "timestamp", "ip_address"]
+    list_filter = ["request_type", "status"]
     search_fields = ["user_email"]
 
     def has_add_permission(self, request):

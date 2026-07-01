@@ -129,3 +129,62 @@ def test_account_deletion_creates_rgpd_audit_log(client, user):
 
     log = RGPDRequestLog.objects.get(user_email="alice@test.com", request_type="delete")
     assert log.timestamp is not None
+
+
+def test_export_zip_creates_answered_audit_log_with_hash(client, user):
+    # T-J3B-2 : l'export (format ZIP par défaut) doit journaliser un audit
+    # trail RGPD "answered" avec le hash SHA-256 du fichier renvoyé.
+    import hashlib
+
+    from rest_framework.authtoken.models import Token
+
+    from .models import RGPDRequestLog
+
+    token = Token.objects.create(user=user)
+    client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
+    response = client.get("/api/accounts/export/")
+
+    assert response.status_code == 200
+    expected_hash = hashlib.sha256(response.content).hexdigest()
+
+    log = RGPDRequestLog.objects.get(user_email="alice@test.com", request_type="export")
+    assert log.status == RGPDRequestLog.Status.ANSWERED
+    assert log.file_hash == expected_hash
+    assert len(log.file_hash) == 64
+
+
+def test_export_json_creates_answered_audit_log_with_hash(client, user):
+    # Idem pour le format JSON structuré (?format=json, T-J3B-4).
+    from rest_framework.authtoken.models import Token
+
+    from .models import RGPDRequestLog
+
+    token = Token.objects.create(user=user)
+    client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
+    response = client.get("/api/accounts/export/?format=json")
+
+    assert response.status_code == 200
+    log = RGPDRequestLog.objects.get(user_email="alice@test.com", request_type="export")
+    assert log.status == RGPDRequestLog.Status.ANSWERED
+    assert log.file_hash is not None
+    assert len(log.file_hash) == 64
+
+
+def test_export_does_not_leak_other_users_audit_logs(client, user):
+    # T-J3B-2 : isolation stricte — l'export d'un utilisateur ne doit pas
+    # produire ni exposer de log au nom d'un autre utilisateur.
+    from rest_framework.authtoken.models import Token
+
+    other = User.objects.create_user(
+        username="carol", email="carol@test.com", password="motdepasse123"
+    )
+    Token.objects.create(user=other)
+
+    token = Token.objects.create(user=user)
+    client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
+    response = client.get("/api/accounts/export/")
+
+    assert response.status_code == 200
+    from .models import RGPDRequestLog
+
+    assert not RGPDRequestLog.objects.filter(user_email="carol@test.com").exists()
