@@ -16,7 +16,7 @@ Créer un endpoint `POST /api/accounts/signup-enseignant/` public qui enregistre
 
 ---
 
-## 2. Contexte du code actuel
+## 2. Contexte du code actueld 
 
 | Fichier | Rôle | À modifier ? |
 |---|---|---|
