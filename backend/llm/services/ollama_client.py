@@ -47,6 +47,10 @@ class OllamaLLMClient(LLMClient):
                     "stream": False,
                     "options": {"temperature": 0.4},  # peu de créativité : on veut du factuel
                     "format": "json",  # mode JSON strict d'Ollama si supporté
+                    # Garde le modèle chargé en RAM 30 min : sur CPU, le
+                    # chargement à froid coûte plusieurs secondes à chaque appel.
+                    # Les générations suivantes démarrent ainsi bien plus vite.
+                    "keep_alive": "30m",
                 },
                 timeout=self.timeout,
             )

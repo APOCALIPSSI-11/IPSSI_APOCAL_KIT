@@ -11,6 +11,16 @@ from django.db import models
 
 
 class Quiz(models.Model):
+    class Status(models.TextChoices):
+        # Statut de génération LLM. Avant, l'état était DÉDUIT du nombre de
+        # questions (0 → « en cours » indéfiniment). Résultat : un échec LLM
+        # (timeout Ollama, JSON invalide…) laissait un quiz vide, le front
+        # bloqué à 95 %, et une carte « morte » dans l'historique. On persiste
+        # désormais un statut explicite pour pouvoir signaler l'échec.
+        GENERATING = "generating", "En cours de génération"
+        COMPLETED = "completed", "Terminé"
+        FAILED = "failed", "Échec"
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -20,6 +30,12 @@ class Quiz(models.Model):
     title = models.CharField(max_length=200, help_text="Titre du cours / quiz (saisi ou déduit).")
     source_text = models.TextField(
         help_text="Texte source utilisé pour la génération (extrait PDF ou saisie).",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.GENERATING,
+        help_text="Statut de la génération LLM (generating / completed / failed).",
     )
     score = models.IntegerField(
         null=True,
