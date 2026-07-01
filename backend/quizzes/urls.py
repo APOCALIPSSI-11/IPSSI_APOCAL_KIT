@@ -1,6 +1,13 @@
 from django.urls import path
 
-from .views import AnswerQuizView, MistakesView, QuizDetailView, QuizListView, QuizStatusView, StatsView
+from .views import (
+    AnswerQuizView,
+    MistakesView,
+    QuizDetailView,
+    QuizListView,
+    QuizStatusView,
+    StatsView,
+)
 
 urlpatterns = [
     path("", QuizListView.as_view(), name="quiz-list"),

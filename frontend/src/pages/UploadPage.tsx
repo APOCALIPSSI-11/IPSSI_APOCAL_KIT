@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type DragEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProgressBar from '@/components/ProgressBar';
 import { generateQuiz, getQuizStatus } from '@/api/llm';
@@ -6,6 +6,13 @@ import { getApiErrorMessage } from '@/api/errors';
 
 const POLL_INTERVAL_MS = 5_000;
 const MAX_POLL_TICKS = 120; // garde-fou : 10 min max
+const MAX_PDF_SIZE_BYTES = 5 * 1024 * 1024;
+const LOADING_MESSAGES = [
+  'Analyse du cours en cours…',
+  'Construction des 10 QCM…',
+  'Vérification de la cohérence des réponses…',
+  'Presque terminé, merci de patienter…',
+];
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -71,15 +78,6 @@ export default function UploadPage() {
   const isPdfInvalid = mode === 'pdf' && (!pdf || pdf.size > 5 * 1024 * 1024);
   const isSubmitDisabled = loading || !title || (mode === 'text' ? isTextInvalid : isPdfInvalid);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null);
-    const file = e.target.files?.[0] ?? null;
-    if (file && file.size > 5 * 1024 * 1024) {
-      setError('Le fichier PDF est trop volumineux (max 5 Mo).');
-    }
-    setPdf(file);
-  };
-
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Nettoyage de l'intervalle si le composant est démonté pendant le polling
@@ -105,7 +103,7 @@ export default function UploadPage() {
       ticks++;
       if (ticks > MAX_POLL_TICKS) {
         stopPolling();
-        setError('La génération a pris trop de temps. Vérifiez qu'Ollama est lancé et réessayez.');
+        setError("La génération a pris trop de temps. Vérifiez qu'Ollama est lancé et réessayez.");
         setLoading(false);
         return;
       }
@@ -305,7 +303,7 @@ export default function UploadPage() {
         <button type="submit" disabled={isSubmitDisabled} className="btn-primary w-full">
           {loading ? (
             <>
-              <span className="animate-spin">⏳</span> Génération en cours…
+              <span className="animate-spin">⏳</span> {LOADING_MESSAGES[loadingMessageIndex]}
             </>
           ) : (
             <>🚀 Générer le quiz</>

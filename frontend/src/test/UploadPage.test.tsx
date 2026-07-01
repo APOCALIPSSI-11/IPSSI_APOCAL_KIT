@@ -1,13 +1,12 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import UploadPage from '../pages/UploadPage';
-import { generateQuiz } from '@/api/llm';
 
 const mockNavigate = vi.fn();
 
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<any>('react-router-dom');
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -75,7 +74,7 @@ describe('UploadPage', () => {
     });
 
     // Switch mode PDF
-    fireEvent.click(screen.getByText(/PDF/i));
+    fireEvent.click(screen.getByRole('button', { name: /📄 PDF/i }));
 
     const fileInput = document.querySelector('input[type="file"]')!;
     expect(fileInput).toBeInTheDocument();
@@ -87,7 +86,7 @@ describe('UploadPage', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     // Devrait afficher un message d'erreur et bloquer le submit
-    expect(screen.getByText(/Le fichier PDF est trop volumineux/i)).toBeInTheDocument();
+    expect(screen.getByText(/dépasse 5 Mo/i)).toBeInTheDocument();
     const submitButton = screen.getByRole('button', { name: /Générer le quiz/i });
     expect(submitButton).toBeDisabled();
   });

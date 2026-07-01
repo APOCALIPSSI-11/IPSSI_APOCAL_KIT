@@ -331,7 +331,11 @@ class ExportDataView(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
-        responses={200: OpenApiResponse(description="Archive ZIP (profil_et_quizz.json + reponses_tentatives.csv)")},
+        responses={
+            200: OpenApiResponse(
+                description="Archive ZIP (profil_et_quizz.json + reponses_tentatives.csv)"
+            )
+        },
     )
     def get(self, request):
         from quizzes.models import Quiz
@@ -376,14 +380,23 @@ class ExportDataView(APIView):
         csv_buffer = io.StringIO()
         writer = csv.writer(csv_buffer)
         writer.writerow(
-            ["quiz_id", "quiz_titre", "question_index", "enonce",
-             "reponse_choisie", "reponse_correcte", "correct"]
+            [
+                "quiz_id",
+                "quiz_titre",
+                "question_index",
+                "enonce",
+                "reponse_choisie",
+                "reponse_correcte",
+                "correct",
+            ]
         )
         for quiz in Quiz.objects.filter(user=user).prefetch_related("questions"):
             for q in quiz.questions.all():
                 chosen = q.options[q.selected_index] if q.selected_index is not None else ""
                 correct_text = q.options[q.correct_index]
-                is_correct = q.selected_index == q.correct_index if q.selected_index is not None else False
+                is_correct = (
+                    q.selected_index == q.correct_index if q.selected_index is not None else False
+                )
                 writer.writerow(
                     [quiz.id, quiz.title, q.index, q.prompt, chosen, correct_text, is_correct]
                 )
