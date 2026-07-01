@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 3
 > **Estimation** : 1h
 > **Assigné** : Hugo HAVET
-> **Statut** : Todo
+> **Statut** : Done
 
 ---
 
@@ -51,7 +51,7 @@ Dès que l'implémentation de `T-J3B-2` est finalisée, récupérer un exemple d
 
 ## 5. Definition of Done
 
-- [ ] La lettre est rédigée dans le fichier `docs/J3/lettre-sar-hugo-petit.md`.
-- [ ] Le texte contient toutes les mentions obligatoires listées dans les spécifications.
-- [ ] Le format d'intégrité SHA-256 est clairement documenté et mis en valeur.
+- [x] La lettre est rédigée dans le fichier `docs/J3/lettre-sar-hugo-petit.md`.
+- [x] Le texte contient toutes les mentions obligatoires listées dans les spécifications.
+- [x] Le format d'intégrité SHA-256 est clairement documenté et mis en valeur — hash réel généré via l'endpoint `GET /api/accounts/me/export/` (T-J3B-2), pas un placeholder.
 - [ ] Le document est validé par le Scrum Master / PO.

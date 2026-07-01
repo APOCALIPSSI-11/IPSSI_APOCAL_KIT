@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 2
 > **Estimation** : 2h
 > **Assigné** : Frederick TOUFIK
-> **Statut** : To Do
+> **Statut** : Done
 
 ---
 
@@ -140,12 +140,12 @@ Modifier `handleSubmit` dans `UploadPage.tsx` pour détecter le `202` et lancer 
 
 ## 5. Definition of Done
 
-- [ ] `GET /api/quizzes/<id>/status/` est fonctionnel et sécurisé (`IsAuthenticated`, filtre `user=request.user`).
-- [ ] Le frontend interroge ce endpoint toutes les 5 secondes pendant la génération.
-- [ ] La boucle s'arrête et redirige vers `/quiz/<id>` dès `status: "completed"`.
-- [ ] La boucle s'arrête et affiche une erreur dès `status: "failed"` ou après 5 échecs réseau consécutifs.
-- [ ] Un garde-fou de 120 ticks (10 min) coupe la boucle en cas de crash silencieux Ollama.
-- [ ] Pas de fuite mémoire : `clearInterval` appelé lors du démontage du composant.
+- [x] `GET /api/quizzes/<id>/status/` est fonctionnel et sécurisé (`IsAuthenticated`, filtre `user=request.user`).
+- [x] Le frontend interroge ce endpoint toutes les 5 secondes pendant la génération.
+- [x] La boucle s'arrête et redirige vers `/quiz/<id>` dès `status: "completed"`.
+- [x] La boucle s'arrête et affiche une erreur dès `status: "failed"` ou après 5 échecs réseau consécutifs.
+- [x] Un garde-fou de 120 ticks (10 min) coupe la boucle en cas de crash silencieux Ollama.
+- [x] Pas de fuite mémoire : `clearInterval` appelé lors du démontage du composant.
 
 ---
 

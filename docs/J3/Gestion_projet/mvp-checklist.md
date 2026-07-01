@@ -36,7 +36,7 @@
 
 ---
 
-## 3. Sécurité LLM (perturbation J3A, décision technique dans [ADR-002](../adr/ADR-002-securisation-llm-rgpd-j3a.md))
+## 3. Sécurité LLM (perturbation J3A, décision technique dans [ADR-002](../../adr/ADR-002-securisation-llm-rgpd-j3a.md))
 
 | # | Item | US | Statut | Preuve / action |
 |---|---|---|---|---|
@@ -45,7 +45,7 @@
 | Validation stricte post-LLM (schéma + anti-XSS) | US-SEC-02 | ✅ | `parse_and_validate_quiz` — 10 questions/4 options/`correct_index` validé + échappement HTML |
 | Tests adversariaux (injection + XSS) en CI | US-SEC-03 | ✅ | `backend/llm/tests.py` : `test_security_prompt_injection_ignored`, `test_security_xss_injection_escaped`, `test_security_invalid_correct_index_raises_llm_error` |
 
-**Gate sécurité : ⚠️ OK avec 1 réserve documentée** (Ollama), non-bloquante pour la démo (le provider OpenAI-compatible est celui utilisé en configuration Pro/Standard par défaut, cf. [ADR-0001](../adr/ADR-001-choix-llm.md)), corrigée en tout début de Sprint 3.
+**Gate sécurité : ⚠️ OK avec 1 réserve documentée** (Ollama), non-bloquante pour la démo (le provider OpenAI-compatible est celui utilisé en configuration Pro/Standard par défaut, cf. [ADR-0001](../../adr/ADR-001-choix-llm.md)), corrigée en tout début de Sprint 3.
 
 ---
 
@@ -85,8 +85,8 @@ Le MVP est considéré **livrable** en fin de Sprint 3 si et seulement si :
 - [ ] §1 et §2 restent verts (non-régression F1-F6 + bonus)
 - [ ] Le reliquat Ollama (US-SEC-01) est corrigé **ou** documenté comme risque accepté si le temps manque (cf. seuil de retrait dans [sprint3-redispatch.md](sprint3-redispatch.md) §4)
 - [ ] US-J3B-1 à US-J3B-5 sont toutes au moins à l'état "Done" ou explicitement reportées en Sprint 4 avec justification écrite
-- [ ] Le Sprint Backlog est mis à jour en v2.4 avec des statuts qui reflètent l'état réel du code (plus d'écart entre classeur et code, cf. [sprint2-revue.md](../J3/sprint2-revue.md) §2)
-- [ ] Les 2 écarts résiduels documentés dans [ADR-002](../adr/ADR-002-securisation-llm-rgpd-j3a.md) (Ollama, audit trail export) sont traités conformément aux tâches Sprint 3 qui leur sont assignées
+- [ ] Le Sprint Backlog est mis à jour en v2.4 avec des statuts qui reflètent l'état réel du code (plus d'écart entre classeur et code, cf. [sprint2-revue.md](sprint2-revue.md) §2)
+- [ ] Les 2 écarts résiduels documentés dans [ADR-002](../../adr/ADR-002-securisation-llm-rgpd-j3a.md) (Ollama, audit trail export) sont traités conformément aux tâches Sprint 3 qui leur sont assignées
 - [ ] Une démo end-to-end est rejouée : signup (avec consentement) → upload → génération quiz → réponse → score → export (avec audit trail visible en base `RGPDRequestLog`) → politique de rétention accessible → lettre de réponse SAR présentée
 - [ ] Tag Git de livraison posé (à définir : `v1.0.0-mvp` a déjà été utilisé en clôture Sprint 2 — prévoir un tag dédié type `v1.1.0-rc` ou équivalent pour la clôture Sprint 3, à confirmer avec le PO)
 

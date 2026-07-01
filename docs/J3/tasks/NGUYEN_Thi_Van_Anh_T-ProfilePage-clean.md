@@ -4,7 +4,9 @@
 > **Sprint** : Sprint 3
 > **Estimation** : 0.25h (15 min)
 > **Assigné** : Van Anh NGUYEN
-> **Statut** : Todo
+> **Statut** : Done
+
+> **Note (01/07)** : le docblock contenait en réalité deux TODO. Seul celui sur l'export RGPD (« Ajouter ici un bouton Exporter mes données ») était obsolète — la fonctionnalité est livrée. Celui sur le signalement de contenu (J4) a été **conservé** : la fonctionnalité n'existe toujours pas dans le code, ce n'est pas un TODO périmé.
 
 ---
 
@@ -51,7 +53,7 @@ S'assurer que l'application frontend compile toujours sans avertissements ou err
 
 ## 5. Definition of Done
 
-- [ ] Le commentaire TODO obsolète est supprimé du fichier `ProfilePage.tsx`.
-- [ ] Le projet compile correctement (`npm run build` ou tests vitest ok).
-- [ ] La page de profil fonctionne à l'identique (pas de régression).
-- [ ] Le code est propre et respecte les standards du projet.
+- [x] Le commentaire TODO obsolète est supprimé du fichier `ProfilePage.tsx`.
+- [x] Le projet compile correctement (`tsc --noEmit` ok).
+- [x] La page de profil fonctionne à l'identique (pas de régression).
+- [x] Le code est propre et respecte les standards du projet.
