@@ -9,6 +9,12 @@ import {
 } from '@/api/admin';
 import { getApiErrorMessage } from '@/api/errors';
 
+function roleLabel(u: AdminUser): string {
+  if (u.is_staff) return 'admin';
+  if (u.role === 'teacher') return 'enseignant';
+  return 'étudiant';
+}
+
 export default function UsersTab() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [q, setQ] = useState('');
@@ -129,7 +135,7 @@ export default function UsersTab() {
                       <span className="text-rose-600">désactivé</span>
                     )}
                   </td>
-                  <td className="px-3 py-2">{u.is_staff ? 'admin' : 'membre'}</td>
+                  <td className="px-3 py-2">{roleLabel(u)}</td>
                   <td className="px-3 py-2">
                     <div className="flex flex-wrap gap-2 text-xs">
                       <button
