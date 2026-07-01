@@ -3,7 +3,7 @@
 > **User Story** : US-23 — *En tant que Léa, je veux voir une progression visuelle de la génération du quiz afin de savoir que le système travaille et d'estimer le temps d'attente.*
 > **Sprint** : Sprint 1
 > **Estimation** : 2h
-> **Assigné** : Azeddine AMARI
+> **Assigné** : Frederick TOUFIK
 > **Statut** : Todo
 
 ---

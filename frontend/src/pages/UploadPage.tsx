@@ -1,7 +1,11 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateQuiz } from '@/api/llm';
+import ProgressBar from '@/components/ProgressBar';
+import { generateQuiz, getQuizStatus } from '@/api/llm';
 import { getApiErrorMessage } from '@/api/errors';
+
+const POLL_INTERVAL_MS = 5_000;
+const MAX_POLL_TICKS = 120; // garde-fou : 10 min max
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -12,20 +16,70 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Nettoyage de l'intervalle si le composant est démonté pendant le polling
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current !== null) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  const stopPolling = () => {
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const startPolling = (quizId: number) => {
+    let ticks = 0;
+    let failCount = 0;
+    const MAX_FAILS = 5;
+
+    intervalRef.current = setInterval(async () => {
+      ticks++;
+      if (ticks > MAX_POLL_TICKS) {
+        stopPolling();
+        setError('La génération a pris trop de temps. Vérifiez qu'Ollama est lancé et réessayez.');
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await getQuizStatus(quizId);
+        failCount = 0;
+        if (res.status === 'completed') {
+          stopPolling();
+          navigate(`/quiz/${quizId}`);
+        } else if (res.status === 'failed') {
+          stopPolling();
+          setError('La génération a échoué côté serveur.');
+          setLoading(false);
+        }
+      } catch {
+        failCount++;
+        if (failCount >= MAX_FAILS) {
+          stopPolling();
+          setError('Connexion perdue pendant la génération.');
+          setLoading(false);
+        }
+      }
+    }, POLL_INTERVAL_MS);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const quiz = await generateQuiz({
+      const result = await generateQuiz({
         title,
         pdf: mode === 'pdf' ? (pdf ?? undefined) : undefined,
         source_text: mode === 'text' ? sourceText : undefined,
       });
-      navigate(`/quiz/${quiz.id}`);
+      startPolling(result.id);
     } catch (err) {
       setError(getApiErrorMessage(err, 'Échec de la génération.'));
-    } finally {
       setLoading(false);
     }
   };
@@ -111,18 +165,21 @@ export default function UploadPage() {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? (
             <>
-              <span className="animate-spin">⏳</span> Génération en cours… (1 à 5 min sur CPU,
-              patientez)
+              <span className="animate-spin">⏳</span> Génération en cours…
             </>
           ) : (
             <>🚀 Générer le quiz</>
           )}
         </button>
 
-        <p className="text-xs text-slate-500 text-center">
-          La génération peut prendre de 1 à 5 minutes selon votre machine (bien plus rapide avec un
-          GPU ou un modèle plus léger).
-        </p>
+        <ProgressBar active={loading} />
+
+        {!loading && (
+          <p className="text-xs text-slate-500 text-center">
+            La génération peut prendre de 1 à 5 minutes selon votre machine (bien plus rapide avec
+            un GPU ou un modèle plus léger).
+          </p>
+        )}
       </form>
     </div>
   );
