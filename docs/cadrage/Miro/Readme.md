@@ -1,0 +1,1 @@
+# Lien vers miro  : [Miro EduTutorIA](https://miro.com/app/board/uXjVHAUf7Ek=/?share_link_id=523526937235)
