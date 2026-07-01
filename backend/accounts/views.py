@@ -40,6 +40,7 @@ from .serializers import (
     PasswordResetRequestSerializer,
     ProfileUpdateSerializer,
     SignupSerializer,
+    TeacherSignupSerializer,
     UserSerializer,
 )
 from .tokens import read_email_verify_token, read_password_reset_tokens
@@ -75,6 +76,27 @@ class SignupView(APIView):
         except EmailError as exc:
             logger.warning("Email de validation non envoyé pour %s : %s", user.email, exc)
 
+        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+
+
+class TeacherSignupView(APIView):
+    """Inscription enseignant : compte teacher opérationnel immédiatement, sans vérification email."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    @extend_schema(request=TeacherSignupSerializer, responses={201: UserSerializer})
+    def post(self, request):
+        from administration.models import SiteConfig
+
+        if not SiteConfig.load().allow_signups:
+            return Response(
+                {"detail": "Les inscriptions sont actuellement fermées."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        serializer = TeacherSignupSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
