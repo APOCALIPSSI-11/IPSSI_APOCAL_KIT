@@ -73,6 +73,13 @@ export type ScorePoint = {
   created_at: string;
 };
 
+export type ChapterStat = {
+  chapter: string;
+  total: number;
+  correct: number;
+  accuracy: number;
+};
+
 export type Stats = {
   total_quizzes: number;
   quizzes_taken: number;
@@ -83,6 +90,7 @@ export type Stats = {
   questions_correct: number;
   accuracy: number | null;
   history: ScorePoint[];
+  chapter_stats: ChapterStat[];
 };
 
 export type Mistake = {

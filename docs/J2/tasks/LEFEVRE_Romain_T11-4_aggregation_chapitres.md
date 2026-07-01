@@ -4,7 +4,7 @@
 > **Sprint** : Sprint 1
 > **Estimation** : 3h
 > **Assigné** : Romain LEFEVRE
-> **Statut** : In Progress
+> **Statut** : Done
 
 ---
 
@@ -114,10 +114,10 @@ Sur `DashboardPage.tsx`, afficher une liste ou un tableau des chapitres avec le 
 
 ## 5. Definition of Done
 
-- [ ] Le champ `chapter` est persisté en base de données.
-- [ ] Le LLM génère et associe un chapitre pour chaque question.
-- [ ] L'API de statistiques renvoie un récapitulatif de réussite regroupé par nom de chapitre.
-- [ ] L'interface utilisateur affiche la précision par chapitre sous forme de liste de progression.
+- [x] Le champ `chapter` est persisté en base de données.
+- [x] Le LLM génère et associe un chapitre pour chaque question.
+- [x] L'API de statistiques renvoie un récapitulatif de réussite regroupé par nom de chapitre.
+- [x] L'interface utilisateur affiche la précision par chapitre sous forme de liste de progression.
 
 ---
 
