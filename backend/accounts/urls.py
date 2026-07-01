@@ -11,12 +11,14 @@ from .views import (
     ProfileView,
     ResendVerificationView,
     SignupView,
+    TeacherSignupView,
     VerifyEmailView,
 )
 
 urlpatterns = [
     # Authentification de base
     path("signup/", SignupView.as_view(), name="signup"),
+    path("signup-enseignant/", TeacherSignupView.as_view(), name="signup-enseignant"),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("me/", MeView.as_view(), name="me"),
