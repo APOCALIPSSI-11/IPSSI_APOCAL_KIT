@@ -68,3 +68,46 @@ def test_generate_quiz_requires_auth():
         format="multipart",
     )
     assert response.status_code in (401, 403)
+
+
+from unittest.mock import patch
+from django.core.files.uploadedfile import SimpleUploadedFile
+from llm.pdf_utils import extract_text_from_pdf, PDFError
+
+
+@override_settings(LLM_BACKEND="mock")
+@patch("llm.views.extract_text_from_pdf")
+def test_generate_quiz_valid_pdf_success(mock_extract, auth_client):
+    mock_extract.return_value = "Lorem ipsum " * 50
+    pdf_file = SimpleUploadedFile("cours.pdf", b"%PDF-1.4...", content_type="application/pdf")
+
+    response = auth_client.post(
+        "/api/llm/generate-quiz/",
+        {"title": "PDF Test", "pdf": pdf_file},
+        format="multipart",
+    )
+    assert response.status_code == 201, response.data
+    assert response.data["title"] == "PDF Test"
+    mock_extract.assert_called_once()
+
+
+@override_settings(LLM_BACKEND="mock")
+def test_generate_quiz_invalid_file_type(auth_client):
+    txt_file = SimpleUploadedFile("test.txt", b"Lorem ipsum dolor sit amet", content_type="text/plain")
+
+    response = auth_client.post(
+        "/api/llm/generate-quiz/",
+        {"title": "Invalid File Test", "pdf": txt_file},
+        format="multipart",
+    )
+    assert response.status_code == 400
+
+
+def test_extract_text_from_pdf_too_large():
+    class DummyFile:
+        size = 5 * 1024 * 1024 + 1
+
+    with pytest.raises(PDFError) as exc:
+        extract_text_from_pdf(DummyFile())
+    assert "trop volumineux" in str(exc.value)
+

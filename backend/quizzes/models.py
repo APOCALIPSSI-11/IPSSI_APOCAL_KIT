@@ -62,6 +62,12 @@ class Question(models.Model):
         blank=True,
         help_text="Dernier index (0 à 3) choisi par l'utilisateur (None si pas répondu).",
     )
+    chapter = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="Nom du chapitre associé à cette question (généré par le LLM).",
+    )
 
     class Meta:
         ordering = ["index"]
