@@ -11,11 +11,17 @@ Endpoints d'authentification (Lot 3 : email-identifiant + validation + reset).
     POST /api/accounts/password-reset/confirm/   — définir le nouveau mot de passe
 """
 
+import csv
+import io
+import json
 import logging
+import zipfile
 
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.utils.timezone import now
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -317,3 +323,80 @@ class ChangePasswordView(APIView):
         Token.objects.filter(user=user).delete()
         token = Token.objects.create(user=user)
         return Response({"detail": "Mot de passe modifié.", "token": token.key})
+
+
+class ExportDataView(APIView):
+    """Export RGPD — Art. 15 & 20 : toutes les données personnelles en ZIP."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses={200: OpenApiResponse(description="Archive ZIP (profil_et_quizz.json + reponses_tentatives.csv)")},
+    )
+    def get(self, request):
+        from quizzes.models import Quiz
+
+        user = request.user
+        profile = get_or_create_profile(user)
+
+        # --- JSON : profil + quizzes ---
+        quizzes_data = []
+        for quiz in Quiz.objects.filter(user=user).prefetch_related("questions"):
+            quizzes_data.append(
+                {
+                    "id": quiz.id,
+                    "title": quiz.title,
+                    "score": quiz.score,
+                    "created_at": quiz.created_at.isoformat(),
+                    "questions": [
+                        {
+                            "index": q.index,
+                            "prompt": q.prompt,
+                            "options": q.options,
+                            "correct_index": q.correct_index,
+                            "selected_index": q.selected_index,
+                        }
+                        for q in quiz.questions.all()
+                    ],
+                }
+            )
+
+        payload = {
+            "profil": {
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "date_joined": user.date_joined.isoformat(),
+                "email_verified": profile.email_verified,
+            },
+            "quizzes": quizzes_data,
+        }
+
+        # --- CSV : réponses par question ---
+        csv_buffer = io.StringIO()
+        writer = csv.writer(csv_buffer)
+        writer.writerow(
+            ["quiz_id", "quiz_titre", "question_index", "enonce",
+             "reponse_choisie", "reponse_correcte", "correct"]
+        )
+        for quiz in Quiz.objects.filter(user=user).prefetch_related("questions"):
+            for q in quiz.questions.all():
+                chosen = q.options[q.selected_index] if q.selected_index is not None else ""
+                correct_text = q.options[q.correct_index]
+                is_correct = q.selected_index == q.correct_index if q.selected_index is not None else False
+                writer.writerow(
+                    [quiz.id, quiz.title, q.index, q.prompt, chosen, correct_text, is_correct]
+                )
+
+        # --- ZIP en mémoire ---
+        zip_buffer = io.BytesIO()
+        date_str = now().strftime("%Y%m%d")
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("profil_et_quizz.json", json.dumps(payload, ensure_ascii=False, indent=2))
+            zf.writestr("reponses_tentatives.csv", csv_buffer.getvalue())
+
+        zip_buffer.seek(0)
+        filename = f"export_{user.id}_{date_str}.zip"
+        response = HttpResponse(zip_buffer.read(), content_type="application/zip")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response

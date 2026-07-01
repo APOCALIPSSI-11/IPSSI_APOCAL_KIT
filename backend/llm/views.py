@@ -4,8 +4,12 @@ Endpoints LLM :
     POST /api/llm/generate-quiz/  — génère un quiz à partir d'un PDF ou d'un texte
 """
 
+import logging
+import threading
+
 import requests
 from django.conf import settings
+from django.db import close_old_connections, transaction
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -14,12 +18,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from quizzes.models import Question, Quiz
-from quizzes.serializers import QuizSerializer
 
 from .pdf_utils import PDFError, extract_text_from_pdf
 from .serializers import GenerateQuizSerializer
 from .services import get_llm_client
-from .services.base import LLMError
+
+logger = logging.getLogger(__name__)
 
 
 class PingView(APIView):
@@ -92,6 +96,26 @@ class PingView(APIView):
             )
 
 
+def _generate_async(quiz_id: int, source_text: str, title: str) -> None:
+    """Exécute la génération LLM dans un thread secondaire et persiste les questions."""
+    try:
+        questions_data = get_llm_client().generate_quiz(source_text=source_text, title=title)
+        with transaction.atomic():
+            quiz = Quiz.objects.get(pk=quiz_id)
+            for i, q_data in enumerate(questions_data, start=1):
+                Question.objects.create(
+                    quiz=quiz,
+                    index=i,
+                    prompt=q_data["prompt"],
+                    options=q_data["options"],
+                    correct_index=q_data["correct_index"],
+                )
+    except Exception:
+        logger.exception("Échec de génération async pour le quiz %d", quiz_id)
+    finally:
+        close_old_connections()
+
+
 class GenerateQuizView(APIView):
     """Génère un quiz de 10 QCM à partir d'un PDF ou d'un texte collé."""
 
@@ -100,11 +124,11 @@ class GenerateQuizView(APIView):
 
     @extend_schema(
         request=GenerateQuizSerializer,
-        responses={201: QuizSerializer},
+        responses={202: OpenApiResponse(description="{ id, status: 'generating' }")},
         description=(
-            "Génère 10 QCM à partir d'un cours. Fournir soit `pdf` (multipart) "
-            "soit `source_text` (≥ 200 caractères). Le quiz est sauvegardé en "
-            "DB et associé à l'utilisateur connecté."
+            "Démarre la génération de 10 QCM en arrière-plan. Retourne immédiatement "
+            "202 ACCEPTED avec l'id du quiz. Interroger GET /api/quizzes/<id>/status/ "
+            "toutes les 5 s pour suivre la complétion."
         ),
     )
     def post(self, request):
@@ -134,32 +158,19 @@ class GenerateQuizView(APIView):
             except PDFError as exc:
                 return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 2. Appel LLM (Ollama ou Mock)
-        try:
-            questions_data = get_llm_client().generate_quiz(source_text=source_text, title=title)
-        except LLMError as exc:
-            return Response(
-                {"detail": f"Échec génération LLM : {exc}"},
-                status=status.HTTP_502_BAD_GATEWAY,
-            )
+        # 2. Création immédiate du quiz (sans questions) — libère la connexion HTTP
+        quiz = Quiz.objects.create(
+            user=request.user,
+            title=title,
+            source_text=source_text,
+        )
 
-        # 3. Persistance — Quiz + 10 Questions dans une transaction
-        from django.db import transaction
+        # 3. Génération LLM dans un thread secondaire (évite les timeouts proxy)
+        thread = threading.Thread(
+            target=_generate_async,
+            args=(quiz.id, source_text, title),
+            daemon=True,
+        )
+        thread.start()
 
-        with transaction.atomic():
-            quiz = Quiz.objects.create(
-                user=request.user,
-                title=title,
-                source_text=source_text,
-            )
-            for i, q in enumerate(questions_data, start=1):
-                Question.objects.create(
-                    quiz=quiz,
-                    index=i,
-                    prompt=q["prompt"],
-                    options=q["options"],
-                    correct_index=q["correct_index"],
-                    chapter=q["chapter"],
-                )
-
-        return Response(QuizSerializer(quiz).data, status=status.HTTP_201_CREATED)
+        return Response({"id": quiz.id, "status": "generating"}, status=status.HTTP_202_ACCEPTED)

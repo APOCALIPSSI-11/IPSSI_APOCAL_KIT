@@ -192,6 +192,19 @@ class StatsView(APIView):
 # ---------------------------------------------------------------------------
 
 
+class QuizStatusView(APIView):
+    """Statut de génération d'un quiz (utilisé pour le polling frontend)."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={200: OpenApiResponse(description="{ status: generating | completed }")})
+    def get(self, request, pk: int):
+        quiz = get_object_or_404(Quiz, pk=pk, user=request.user)
+        if quiz.questions.count() == 10:
+            return Response({"status": "completed"})
+        return Response({"status": "generating"})
+
+
 class MistakesView(APIView):
     """Liste les questions ratées (dernière réponse incorrecte) de l'utilisateur."""
 
