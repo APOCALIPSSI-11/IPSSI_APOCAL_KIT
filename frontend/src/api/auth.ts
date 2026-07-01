@@ -14,6 +14,8 @@ export type User = {
   email: string;
   first_name?: string;
   last_name?: string;
+  /** Rôle métier exposé par le backend: student | teacher */
+  role?: 'student' | 'teacher';
   /** L'utilisateur a-t-il confirmé son adresse email (lien reçu par mail) ? */
   email_verified?: boolean;
   /** Compte administrateur (accès à la page /admin) ? */
@@ -38,6 +40,19 @@ export async function signup(input: {
 }): Promise<User> {
   const { data } = await api.post<User>('/accounts/signup/', input);
   // Auto-login après signup (réutilise email + mot de passe).
+  await login(input.email, input.password);
+  return data;
+}
+
+/** Inscription dédiée enseignant (US-26). */
+export async function signupTeacher(input: {
+  email: string;
+  password: string;
+  first_name?: string;
+  last_name?: string;
+}): Promise<User> {
+  const { data } = await api.post<User>('/accounts/signup-enseignant/', input);
+  // Auto-login après signup enseignant pour rediriger vers le dashboard classe.
   await login(input.email, input.password);
   return data;
 }

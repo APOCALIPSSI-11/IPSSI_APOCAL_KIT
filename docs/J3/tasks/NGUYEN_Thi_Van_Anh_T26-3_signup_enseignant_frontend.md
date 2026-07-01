@@ -3,8 +3,8 @@
 > **User Story** : US-26 — *En tant qu'enseignante, je veux créer mon compte immédiatement sans validation manuelle, afin de tester l'outil sans délai.*
 > **Sprint** : Sprint 3
 > **Estimation** : 2h
-> **Assigné** : Van Anh NGUYEN (repris de Hugo HAVET)
-> **Statut** : Todo
+> **Assigné** : Thi Van Anh NGUYEN
+> **Statut** : Done
 
 ---
 
@@ -24,6 +24,8 @@ L'objectif de cette tâche est de créer l'interface utilisateur pour l'inscript
 | [frontend/src/pages/TeacherSignupPage.tsx](../../../frontend/src/pages/TeacherSignupPage.tsx) | Page d'inscription pour les enseignants | **OUI** [NEW] (ou adapter `SignupPage.tsx`) |
 | [frontend/src/App.tsx](../../../frontend/src/App.tsx) | Déclaration des routes de l'application | **OUI** |
 | [frontend/src/api/auth.ts](../../../frontend/src/api/auth.ts) | Client d'authentification API | **OUI** (ajouter l'appel API enseignant) |
+| [frontend/src/components/Layout.tsx](../../../frontend/src/components/Layout.tsx) | Navigation conditionnelle selon le rôle connecté | **OUI** |
+| [frontend/src/pages/HomePage.tsx](../../../frontend/src/pages/HomePage.tsx) | CTA d'accès direct au dashboard enseignant | **OUI** |
 
 ---
 
@@ -43,6 +45,11 @@ export async function signupTeacher(data: SignupData): Promise<User> {
 - Consentement explicite aux CGU et à la politique de confidentialité (obligation RGPD, réutiliser le mécanisme de checkbox obligatoire de `SignupPage.tsx`).
 - Gestion des états de chargement et d'erreur.
 - Après soumission avec succès, appeler `refresh()` du contexte d'authentification et rediriger vers `/dashboard-classe` (qui sera créé en `T-T1.3`).
+
+### 3.3 Affichage du rôle côté frontend
+- Le type `User` frontend contient `role` (`student` | `teacher`) pour piloter l'UX après connexion.
+- Si l'utilisateur connecté a `role = teacher`, la navigation expose explicitement l'entrée `dashboard-classe`.
+- Cette propagation du rôle évite qu'un enseignant reste bloqué dans le flux étudiant (`/upload`).
 
 ---
 
@@ -64,11 +71,12 @@ Dans [frontend/src/App.tsx](../../../frontend/src/App.tsx), importer `TeacherSig
 
 ## 5. Definition of Done
 
-- [ ] La page `/signup-enseignant` est accessible.
-- [ ] Le formulaire valide correctement les champs requis et le consentement obligatoire.
-- [ ] L'inscription d'un enseignant appelle bien l'endpoint `/api/accounts/signup-enseignant/`.
-- [ ] Après inscription réussie, l'enseignant est connecté et redirigé vers `/dashboard-classe`.
-- [ ] La page conserve la charte graphique et l'esthétique du projet (boutons, inputs, gestion d'erreurs).
+- [x] La page `/signup-enseignant` est accessible.
+- [x] Le formulaire valide correctement les champs requis et le consentement obligatoire.
+- [x] L'inscription d'un enseignant appelle bien l'endpoint `/api/accounts/signup-enseignant/`.
+- [x] Après inscription réussie, l'enseignant est connecté et redirigé vers `/dashboard-classe`.
+- [x] La page conserve la charte graphique et l'esthétique du projet (boutons, inputs, gestion d'erreurs).
+- [x] Le rôle `teacher` est bien exploité côté frontend pour afficher l'accès au dashboard classe.
 
 ---
 
