@@ -71,8 +71,22 @@ export default function UploadPage() {
     handlePdfSelection(file);
   };
 
+  const isTextInvalid = mode === 'text' && sourceText.length < 200;
+  const isPdfInvalid = mode === 'pdf' && (!pdf || pdf.size > 5 * 1024 * 1024);
+  const isSubmitDisabled = loading || !title || (mode === 'text' ? isTextInvalid : isPdfInvalid);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null);
+    const file = e.target.files?.[0] ?? null;
+    if (file && file.size > 5 * 1024 * 1024) {
+      setError('Le fichier PDF est trop volumineux (max 5 Mo).');
+    }
+    setPdf(file);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (isSubmitDisabled) return;
     setError(null);
 
     if (mode === 'pdf' && !pdf) {
@@ -236,13 +250,13 @@ export default function UploadPage() {
             </>
           )}
           {mode === 'text' && (
-            <p className="text-xs text-slate-500 mt-1">
+            <p className={`text-xs mt-1 ${sourceText.length < 200 ? 'text-amber-600' : 'text-slate-500'}`}>
               {sourceText.length} / 200 caractères minimum
             </p>
           )}
         </div>
 
-        <button type="submit" disabled={loading} className="btn-primary w-full">
+        <button type="submit" disabled={isSubmitDisabled} className="btn-primary w-full">
           {loading ? (
             <>
               <span className="animate-spin">⏳</span> {LOADING_MESSAGES[loadingMessageIndex]}

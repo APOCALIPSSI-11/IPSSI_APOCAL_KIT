@@ -159,6 +159,7 @@ class GenerateQuizView(APIView):
                     prompt=q["prompt"],
                     options=q["options"],
                     correct_index=q["correct_index"],
+                    chapter=q["chapter"],
                 )
 
         return Response(QuizSerializer(quiz).data, status=status.HTTP_201_CREATED)

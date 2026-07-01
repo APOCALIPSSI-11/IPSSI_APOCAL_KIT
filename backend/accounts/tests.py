@@ -46,6 +46,24 @@ def test_signup_requires_email(client):
     assert response.status_code == 400
 
 
+def test_signup_password_too_short(client):
+    response = client.post(
+        "/api/accounts/signup/",
+        {"email": "bob@test.com", "password": "short"},
+        format="json",
+    )
+    assert response.status_code == 400
+
+
+def test_signup_duplicate_email(client, user):
+    response = client.post(
+        "/api/accounts/signup/",
+        {"email": "ALICE@TEST.COM", "password": "password123"},
+        format="json",
+    )
+    assert response.status_code == 400
+
+
 def test_login_returns_token(client, user):
     response = client.post(
         "/api/accounts/login/",
