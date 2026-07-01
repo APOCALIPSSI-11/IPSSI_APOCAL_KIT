@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Question, Quiz
+from .models import Course, Question, Quiz
 
 
 class QuestionInline(admin.TabularInline):
@@ -22,3 +22,10 @@ class QuestionAdmin(admin.ModelAdmin):
     list_display = ["quiz", "index", "prompt"]
     list_filter = ["quiz"]
     search_fields = ["prompt"]
+
+
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ["title", "user", "source", "created_at"]
+    list_filter = ["source", "created_at"]
+    search_fields = ["title", "content"]
