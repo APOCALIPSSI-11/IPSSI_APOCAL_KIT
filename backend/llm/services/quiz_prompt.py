@@ -10,6 +10,7 @@ prompt ou durcirez la validation (perturbations J3 « prompt injection » et J4
 profitent automatiquement.
 """
 
+import html
 import json
 import logging
 import re
@@ -131,10 +132,15 @@ def parse_and_validate_quiz(raw: str) -> list[dict]:
         # Nettoyage et limitation à 100 caractères
         cleaned_chapter = chapter.strip().capitalize()[:100]
 
+        # Neutralisation XSS : on échappe les balises HTML dans le prompt et
+        # les options pour éviter toute injection lors d'un rendu côté client.
+        sanitized_prompt = html.escape(prompt.strip())
+        sanitized_options = [html.escape(o.strip()) for o in options]
+
         cleaned.append(
             {
-                "prompt": prompt.strip(),
-                "options": [o.strip() for o in options],
+                "prompt": sanitized_prompt,
+                "options": sanitized_options,
                 "correct_index": correct_index,
                 "chapter": cleaned_chapter,
             }
