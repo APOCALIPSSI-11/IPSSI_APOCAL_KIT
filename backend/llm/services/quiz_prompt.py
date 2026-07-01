@@ -31,13 +31,19 @@ Règles ABSOLUES :
 - Exactement 10 questions.
 - Chaque question a EXACTEMENT 4 options.
 - Une seule bonne réponse par question, indiquée par "correct_index" (0 à 3).
+- Chaque question doit être associée à un chapitre ou thème précis du cours, indiqué par "chapter" (max 100 caractères, ex: "Algorithmique", "Gestion de projet", etc.).
 - Pas de markdown, pas de balises HTML, pas d'explications hors JSON.
 - Sortie = JSON STRICT et UNIQUEMENT JSON.
 
 Format de sortie :
 {
   "questions": [
-    {"prompt": "...", "options": ["...","...","...","..."], "correct_index": 0},
+    {
+      "prompt": "...",
+      "options": ["...","...","...","..."],
+      "correct_index": 0,
+      "chapter": "Nom du chapitre"
+    },
     ... (10 entrées)
   ]
 }
@@ -109,6 +115,7 @@ def parse_and_validate_quiz(raw: str) -> list[dict]:
         prompt = q.get("prompt")
         options = q.get("options")
         correct_index = q.get("correct_index")
+        chapter = q.get("chapter")
 
         if not isinstance(prompt, str) or not prompt.strip():
             raise LLMError(f"Question {i} : prompt manquant.")
@@ -118,12 +125,18 @@ def parse_and_validate_quiz(raw: str) -> list[dict]:
             raise LLMError(f"Question {i} : options invalides.")
         if not isinstance(correct_index, int) or correct_index not in (0, 1, 2, 3):
             raise LLMError(f"Question {i} : correct_index doit être 0, 1, 2 ou 3.")
+        if not isinstance(chapter, str) or not chapter.strip():
+            raise LLMError(f"Question {i} : chapter doit être une chaîne non vide.")
+
+        # Nettoyage et limitation à 100 caractères
+        cleaned_chapter = chapter.strip().capitalize()[:100]
 
         cleaned.append(
             {
                 "prompt": prompt.strip(),
                 "options": [o.strip() for o in options],
                 "correct_index": correct_index,
+                "chapter": cleaned_chapter,
             }
         )
 
