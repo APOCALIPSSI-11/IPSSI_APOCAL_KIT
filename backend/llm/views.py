@@ -109,6 +109,7 @@ def _generate_async(quiz_id: int, source_text: str, title: str) -> None:
                     prompt=q_data["prompt"],
                     options=q_data["options"],
                     correct_index=q_data["correct_index"],
+                    chapter=q_data.get("chapter"),
                 )
     except Exception:
         logger.exception("Échec de génération async pour le quiz %d", quiz_id)
