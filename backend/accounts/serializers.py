@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer en lecture pour l'utilisateur connecté."""
 
     email_verified = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -30,12 +31,16 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "date_joined",
             "email_verified",
+            "role",
             "is_staff",
         ]
         read_only_fields = fields
 
     def get_email_verified(self, obj) -> bool:
         return get_or_create_profile(obj).email_verified
+
+    def get_role(self, obj) -> str:
+        return get_or_create_profile(obj).role
 
 
 class SignupSerializer(serializers.ModelSerializer):
