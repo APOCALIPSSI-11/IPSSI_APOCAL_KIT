@@ -80,9 +80,9 @@ npm run test
 
 ## 5. Definition of Done
 
-- [ ] L'ensemble des cas d'erreurs (PDF volumineux, non-PDF, texte court) et de succès sont couverts par les tests unitaires backend.
-- [ ] La validation côté client pour la taille de fichier et le nombre de caractères est testée et validée dans le frontend.
-- [ ] Tous les tests écrits passent au vert sans régression.
+- [x] L'ensemble des cas d'erreurs (PDF volumineux, non-PDF, texte court) et de succès sont couverts par les tests unitaires backend.
+- [x] La validation côté client pour la taille de fichier et le nombre de caractères est testée et validée dans le frontend.
+- [x] Tous les tests écrits passent au vert sans régression.
 
 ---
 

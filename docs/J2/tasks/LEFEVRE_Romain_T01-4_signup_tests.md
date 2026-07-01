@@ -106,10 +106,10 @@ Créer un fichier de test `frontend/src/test/SignupPage.test.tsx` pour tester le
 
 ## 5. Definition of Done (DoD)
 
-- [ ] Les tests backend couvrent les scénarios de succès, d'email manquant, de mot de passe invalide et de doublon d'email.
-- [ ] Tous les tests pytest s'exécutent avec succès (`pytest accounts/` -> 100% OK).
-- [ ] Les tests frontend couvrent le rendu, le succès d'inscription avec redirection, et l'affichage d'erreurs d'API.
-- [ ] Tous les tests Vitest passent avec succès.
+- [x] Les tests backend couvrent les scénarios de succès, d'email manquant, de mot de passe invalide et de doublon d'email.
+- [x] Tous les tests pytest s'exécutent avec succès (`pytest accounts/` -> 100% OK).
+- [x] Les tests frontend couvrent le rendu, le succès d'inscription avec redirection, et l'affichage d'erreurs d'API.
+- [x] Tous les tests Vitest passent avec succès.
 
 ---
 

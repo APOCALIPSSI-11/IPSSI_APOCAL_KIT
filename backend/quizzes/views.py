@@ -143,6 +143,34 @@ class StatsView(APIView):
             for q in taken.order_by("created_at")
         ]
 
+        # Agrégation par chapitre : calcule le total de questions et le total de correctes
+        from django.db.models import Case, When, IntegerField, Count, Sum
+
+        chapter_stats = answered.values("chapter").annotate(
+            total=Count("id"),
+            correct=Sum(
+                Case(
+                    When(selected_index=F("correct_index"), then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
+        )
+
+        chapter_results = []
+        for stat in chapter_stats:
+            total = stat["total"]
+            correct = stat["correct"] or 0
+            accuracy = round(100 * correct / total) if total else 0
+            chapter_results.append(
+                {
+                    "chapter": stat["chapter"] or "Général",
+                    "total": total,
+                    "correct": correct,
+                    "accuracy": accuracy,
+                }
+            )
+
         return Response(
             {
                 "total_quizzes": quizzes.count(),
@@ -154,6 +182,7 @@ class StatsView(APIView):
                 "questions_correct": nb_correct,
                 "accuracy": round(100 * nb_correct / nb_answered) if nb_answered else None,
                 "history": history,
+                "chapter_stats": chapter_results,
             }
         )
 

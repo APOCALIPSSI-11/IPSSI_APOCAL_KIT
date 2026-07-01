@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -130,7 +131,30 @@ export default function SignupPage() {
             />
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full">
+          <div className="flex items-start gap-2">
+            <input
+              id="rgpd-consent"
+              type="checkbox"
+              required
+              disabled={loading}
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-1"
+            />
+            <label htmlFor="rgpd-consent" className="text-sm text-slate-700">
+              J'accepte les{' '}
+              <Link to="/legal/cgu" className="text-indigo-600 hover:underline">
+                CGU
+              </Link>{' '}
+              et la{' '}
+              <Link to="/legal/confidentialite" className="text-indigo-600 hover:underline">
+                  Politique de confidentialité
+              </Link>{' '}
+              d'EduTutor IA.
+            </label>
+          </div>
+
+          <button type="submit" disabled={loading || !acceptedTerms} className="btn-primary w-full">
             {loading ? 'Création du compte…' : 'Créer mon compte'}
           </button>
         </form>

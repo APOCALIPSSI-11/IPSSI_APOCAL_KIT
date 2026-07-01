@@ -99,11 +99,11 @@ Déclarer `handleDelete` pour appeler le client API, vider le token du localStor
 
 ## 5. Definition of Done
 
-- [ ] La section "Zone de danger" est visible en bas de la page.
-- [ ] Le bouton de suppression est grisé et incassable tant que la checkbox de confirmation est décochée.
-- [ ] Le mot de passe est saisi sous forme masquée (`type="password"`).
-- [ ] La soumission avec succès détruit la session locale et renvoie sur `/login`.
-- [ ] Les erreurs renvoyées par le serveur (ex: mot de passe faux) s'affichent correctement et réactivent la zone.
+- [x] La section "Zone de danger" est visible en bas de la page.
+- [x] Le bouton de suppression est grisé et incassable tant que la checkbox de confirmation est décochée.
+- [x] Le mot de passe est saisi sous forme masquée (`type="password"`).
+- [x] La soumission avec succès détruit la session locale et renvoie sur `/login`.
+- [x] Les erreurs renvoyées par le serveur (ex: mot de passe faux) s'affichent correctement et réactivent la zone.
 
 ---
 
