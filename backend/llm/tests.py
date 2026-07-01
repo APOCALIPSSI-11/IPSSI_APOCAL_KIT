@@ -1,11 +1,14 @@
 """Tests pour l'app llm — K1 (ping) + K2 (generate-quiz)."""
 
+from unittest.mock import patch
+
 import pytest
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.test import override_settings
 from rest_framework.test import APIClient
 
-from quizzes.models import Quiz
+from quizzes.models import Question, Quiz
 
 pytestmark = pytest.mark.django_db
 
@@ -68,3 +71,28 @@ def test_generate_quiz_requires_auth():
         format="multipart",
     )
     assert response.status_code in (401, 403)
+
+
+@override_settings(LLM_BACKEND="mock")
+def test_generate_quiz_rolls_back_on_question_insert_failure(auth_client):
+    """T-03.3 — une erreur SQL sur la question 5 ne doit laisser aucune trace en base."""
+    real_create = Question.objects.create
+
+    def flaky_create(*args, **kwargs):
+        if kwargs.get("index") == 5:
+            raise IntegrityError("Erreur simulée d'insertion sur la question 5")
+        return real_create(*args, **kwargs)
+
+    with patch("quizzes.models.Question.objects.create", side_effect=flaky_create):
+        with pytest.raises(IntegrityError):
+            auth_client.post(
+                "/api/llm/generate-quiz/",
+                {
+                    "title": "Quiz voué à échouer",
+                    "source_text": "Lorem ipsum " * 50,
+                },
+                format="multipart",
+            )
+
+    assert Quiz.objects.filter(title="Quiz voué à échouer").count() == 0
+    assert Question.objects.filter(prompt__icontains="Quiz voué à échouer").count() == 0

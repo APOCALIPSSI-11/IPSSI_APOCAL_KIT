@@ -24,7 +24,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .emails import EmailError, send_password_reset_email, send_verification_email
-from .models import get_or_create_profile
+from .models import RGPDRequestLog, get_or_create_profile
 from .serializers import (
     ChangePasswordSerializer,
     DeleteAccountSerializer,
@@ -274,10 +274,24 @@ class ProfileView(APIView):
         serializer.is_valid(raise_exception=True)
 
         user = request.user
+        # Audit Trail RGPD (T-RGPD-01.3) : on journalise AVANT le hard delete,
+        # sinon l'email de l'utilisateur supprimé serait perdu.
+        RGPDRequestLog.objects.create(
+            user_email=user.email,
+            request_type="delete",
+            ip_address=request.META.get("REMOTE_ADDR"),
+        )
         Token.objects.filter(user=user).delete()  # invalide le token courant
         django_logout(request)
         user.delete()  # supprime aussi le Profile (on_delete=CASCADE)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# [TODO T-RGPD-01.1 — Frederick TOUFIK] Quand ExportUserDataView.get() sera
+# implémentée, journaliser l'export dedans avec :
+#   RGPDRequestLog.objects.create(user_email=request.user.email,
+#       request_type="export", ip_address=request.META.get("REMOTE_ADDR"))
+# (RGPDRequestLog est déjà importé ci-dessus, cf. T-RGPD-01.3.)
 
 
 class ChangePasswordView(APIView):
