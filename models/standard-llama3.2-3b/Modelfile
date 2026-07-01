@@ -1,0 +1,11 @@
+# Tier Standard — llama3.2:3b (ADR-0001)
+#
+# SQUELETTE : à remplacer par l'export réel lors de la préparation du pack de
+# livraison (voir models/README.md). Une fois les poids copiés dans ce dossier,
+# la ligne FROM doit pointer vers le fichier .gguf local, par exemple :
+#
+#   FROM ./llama3.2-3b-q4_0.gguf
+#
+# Ne JAMAIS remplacer par `FROM llama3.2:3b` seul chez le client : cela
+# déclencherait un `ollama pull` réseau, incompatible avec un site air-gapped.
+FROM ./llama3.2-3b.gguf
