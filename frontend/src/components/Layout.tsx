@@ -41,12 +41,21 @@ export default function Layout() {
                 <Link to="/upload" className="text-slate-700 hover:text-indigo-600">
                   Nouveau quiz
                 </Link>
-                <Link
-                  to="/dashboard"
-                  className="text-slate-700 hover:text-indigo-600 hidden sm:inline"
-                >
-                  Tableau de bord
-                </Link>
+                {user.role === 'teacher' ? (
+                  <Link
+                    to="/dashboard-classe"
+                    className="text-slate-700 hover:text-indigo-600 hidden sm:inline"
+                  >
+                    Dashboard classe
+                  </Link>
+                ) : (
+                  <Link
+                    to="/dashboard"
+                    className="text-slate-700 hover:text-indigo-600 hidden sm:inline"
+                  >
+                    Tableau de bord
+                  </Link>
+                )}
                 <Link
                   to="/review"
                   className="text-slate-700 hover:text-indigo-600 hidden sm:inline"

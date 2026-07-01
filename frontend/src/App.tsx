@@ -5,9 +5,11 @@ import { SiteConfigProvider } from '@/contexts/SiteConfigContext';
 import Layout from '@/components/Layout';
 import RequireAuth from '@/components/RequireAuth';
 import RequireAdmin from '@/components/RequireAdmin';
+import RequireTeacher from '@/components/RequireTeacher';
 import HomePage from '@/pages/HomePage';
 import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
+import TeacherSignupPage from '@/pages/TeacherSignupPage';
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import VerifyEmailPage from '@/pages/VerifyEmailPage';
@@ -16,6 +18,7 @@ import QuizPage from '@/pages/QuizPage';
 import HistoryPage from '@/pages/HistoryPage';
 import ProfilePage from '@/pages/ProfilePage';
 import DashboardPage from '@/pages/DashboardPage';
+import TeacherDashboardPage from '@/pages/TeacherDashboardPage';
 import ReviewMistakesPage from '@/pages/ReviewMistakesPage';
 import AdminPage from '@/pages/admin/AdminPage';
 import MentionsLegalesPage from '@/pages/legal/MentionsLegalesPage';
@@ -34,6 +37,7 @@ export default function App() {
                 <Route index element={<HomePage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="signup" element={<SignupPage />} />
+                <Route path="signup-enseignant" element={<TeacherSignupPage />} />
                 <Route path="forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="reset-password" element={<ResetPasswordPage />} />
                 <Route path="verify-email" element={<VerifyEmailPage />} />
@@ -83,6 +87,14 @@ export default function App() {
                     <RequireAuth>
                       <DashboardPage />
                     </RequireAuth>
+                  }
+                />
+                <Route
+                  path="dashboard-classe"
+                  element={
+                    <RequireTeacher>
+                      <TeacherDashboardPage />
+                    </RequireTeacher>
                   }
                 />
                 <Route

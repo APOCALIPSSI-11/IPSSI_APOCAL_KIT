@@ -21,9 +21,15 @@ export default function HomePage() {
         <div className="mt-8 flex flex-wrap gap-3 justify-center">
           {user ? (
             <>
-              <Link to="/upload" className="btn-primary px-6 py-3 text-base">
-                Créer un quiz
-              </Link>
+              {user.role === 'teacher' ? (
+                <Link to="/dashboard-classe" className="btn-primary px-6 py-3 text-base">
+                  Ouvrir le dashboard classe
+                </Link>
+              ) : (
+                <Link to="/upload" className="btn-primary px-6 py-3 text-base">
+                  Créer un quiz
+                </Link>
+              )}
               <Link to="/history" className="btn-secondary px-6 py-3 text-base">
                 Voir mon historique
               </Link>
@@ -32,6 +38,9 @@ export default function HomePage() {
             <>
               <Link to="/signup" className="btn-primary px-6 py-3 text-base">
                 Commencer gratuitement
+              </Link>
+              <Link to="/signup-enseignant" className="btn-secondary px-6 py-3 text-base">
+                Je suis enseignant
               </Link>
               <Link to="/login" className="btn-secondary px-6 py-3 text-base">
                 Se connecter

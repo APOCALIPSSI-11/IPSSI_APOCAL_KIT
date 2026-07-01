@@ -3,8 +3,8 @@
 > **User Story** : US-T1 — *Espace Enseignant / Suivi de Classe*
 > **Sprint** : Sprint 3
 > **Estimation** : 2h
-> **Assigné** : Van Anh NGUYEN
-> **Statut** : Todo
+> **Assigné** : Thi Van Anh NGUYEN
+> **Statut** : Done
 
 ---
 
@@ -23,6 +23,8 @@ L'objectif de cette tâche est de créer l'interface du tableau de bord de l'ens
 | [frontend/src/pages/TeacherDashboardPage.tsx](../../../frontend/src/pages/TeacherDashboardPage.tsx) | Page de dashboard enseignant | **OUI** [NEW] |
 | [frontend/src/App.tsx](../../../frontend/src/App.tsx) | Routage de l'application | **OUI** |
 | [frontend/src/components/RequireAuth.tsx](../../../frontend/src/components/RequireAuth.tsx) | Sécurité des routes par rôle | **OUI** (si besoin de restreindre aux enseignants) |
+| [frontend/src/components/RequireTeacher.tsx](../../../frontend/src/components/RequireTeacher.tsx) | Garde dédiée au rôle `teacher` | **OUI** [NEW] |
+| [frontend/src/pages/admin/UsersTab.tsx](../../../frontend/src/pages/admin/UsersTab.tsx) | Affichage explicite des rôles (`admin`, `enseignant`, `étudiant`) | **OUI** |
 
 ---
 
@@ -48,6 +50,11 @@ export async function getTeacherDashboardData() {
   - Score moyen de l'étudiant.
   - Date de dernière activité.
 
+### 3.3 Affichage du rôle côté frontend
+- La route `/dashboard-classe` est protégée par un guard `RequireTeacher` (403 côté UI pour les non-enseignants).
+- Le rôle utilisateur est affiché de manière explicite dans l'interface admin (`admin`, `enseignant`, `étudiant`) au lieu d'un label générique `membre`.
+- Cette clarification facilite le debug des parcours selon le profil connecté.
+
 ---
 
 ## 4. Étapes détaillées
@@ -66,10 +73,11 @@ Dans [frontend/src/App.tsx](../../../frontend/src/App.tsx), ajouter la route `/d
 
 ## 5. Definition of Done
 
-- [ ] La route `/dashboard-classe` est fonctionnelle.
-- [ ] La page affiche correctement les KPI globaux et la liste des étudiants avec leurs scores moyens.
-- [ ] L'accès est interdit (redirection ou page d'erreur 403) aux utilisateurs ordinaires (étudiants).
-- [ ] L'intégration avec l'endpoint backend `GET /api/dashboard-classe/` est fonctionnelle.
+- [x] La route `/dashboard-classe` est fonctionnelle.
+- [x] La page affiche correctement les KPI globaux et la liste des étudiants avec leurs scores moyens.
+- [x] L'accès est interdit (redirection ou page d'erreur 403) aux utilisateurs ordinaires (étudiants).
+- [x] L'intégration avec l'endpoint backend `GET /api/dashboard-classe/` est fonctionnelle.
+- [x] Le rôle affiché côté frontend est explicite pour distinguer `enseignant` et `étudiant`.
 
 ---
 
