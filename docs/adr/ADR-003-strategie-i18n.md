@@ -19,7 +19,7 @@ EduTutor IA est aujourd'hui **mono-langue** :
 - côté backend Django, `LANGUAGE_CODE = "fr"` est figé dans `backend/apocal/settings.py`, `USE_I18N` est activé mais aucun fichier de traduction n'existe ;
 - côté génération de quiz, le LLM (`backend/llm/services/quiz_prompt.py`, `ollama_client.py`) ne reçoit aucune consigne de langue explicite : il déduit implicitement la langue de sortie à partir du texte du cours, sans garantie ni contrôle.
 
-La levée de fonds de J4 ouvre une expansion européenne ([persona Alberta Aravindan](../J4/i18n/persona-alberta.md)). Il faut choisir une architecture pour **(1)** rendre l'interface multilingue et **(2)** garantir que le contenu généré par le LLM est produit dans la langue attendue.
+La levée de fonds de J4 ouvre une expansion européenne ([persona Alberta Aravindan](../pilotage/internationalisation/persona-alberta.md)). Il faut choisir une architecture pour **(1)** rendre l'interface multilingue et **(2)** garantir que le contenu généré par le LLM est produit dans la langue attendue.
 
 ## Decision Drivers
 
@@ -58,7 +58,7 @@ La levée de fonds de J4 ouvre une expansion européenne ([persona Alberta Aravi
 - Ajouter une nouvelle langue d'interface devient un ajout de fichier de traduction, sans toucher au code des composants.
 
 ### Négatives
-- Charge de traduction humaine des fichiers de langue (FR/EN/ES) non automatisée par cette décision — nécessite une relecture croisée (voir [R-I18N-03](../J4/i18n/analyse-risques-i18n.md)).
+- Charge de traduction humaine des fichiers de langue (FR/EN/ES) non automatisée par cette décision — nécessite une relecture croisée (voir [R-I18N-03](../pilotage/internationalisation/analyse-risques-i18n.md)).
 - La détection de langue du cours source à l'upload n'est pas garantie fiable à 100 % (textes courts, mélange de langues) : un mécanisme de correction manuelle par l'utilisateur reste nécessaire en complément.
 - Le plafond de tentatives de régénération en cas de langue incorrecte introduit une latence supplémentaire potentielle pour l'utilisateur, à mesurer lors de l'implémentation.
 
@@ -67,10 +67,10 @@ La levée de fonds de J4 ouvre une expansion européenne ([persona Alberta Aravi
 
 ## Liens
 
-- Epic 14 — dossier i18n complet : [docs/J4/i18n/README.md](../J4/i18n/README.md)
-- Persona Alberta Aravindan : [docs/J4/i18n/persona-alberta.md](../J4/i18n/persona-alberta.md)
-- User stories i18n : [docs/J4/i18n/user-stories-i18n.md](../J4/i18n/user-stories-i18n.md)
-- Analyse de risques i18n : [docs/J4/i18n/analyse-risques-i18n.md](../J4/i18n/analyse-risques-i18n.md)
+- Epic 14 — dossier i18n complet : [docs/pilotage/internationalisation/README.md](../pilotage/internationalisation/README.md)
+- Persona Alberta Aravindan : [docs/pilotage/internationalisation/persona-alberta.md](../pilotage/internationalisation/persona-alberta.md)
+- User stories i18n : [docs/pilotage/internationalisation/user-stories-i18n.md](../pilotage/internationalisation/user-stories-i18n.md)
+- Analyse de risques i18n : [docs/pilotage/internationalisation/analyse-risques-i18n.md](../pilotage/internationalisation/analyse-risques-i18n.md)
 - ADR-0001 (contrainte de souveraineté / architecture LLM) : [ADR-001-choix-llm.md](./ADR-001-choix-llm.md)
 - ADR-0002 (séparation system/user déjà en place sur l'appel LLM) : [ADR-002-securisation-llm-rgpd-j3a.md](./ADR-002-securisation-llm-rgpd-j3a.md)
 - Template MADR : https://blog.stephane-robert.info/docs/documenter/concevoir/adr/
