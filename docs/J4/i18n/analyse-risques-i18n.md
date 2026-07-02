@@ -69,4 +69,4 @@
 
 - Actions préventives → épic **EP-14 — Internationalisation**, à intégrer au Product Backlog v4.0 par le PO aux côtés des risques des axes scalabilité et RGAA.
 - Décision d'architecture associée → [ADR-003 — Stratégie i18n](../../adr/ADR-003-strategie-i18n.md).
-- Persona de référence → [persona-lucia.md](persona-lucia.md).
+- Persona de référence → [persona-alberta.md](persona-alberta.md).

@@ -1,4 +1,4 @@
-# Persona élargie — Lucia (utilisatrice internationale)
+# Persona élargie — Alberta Aravindan (utilisatrice internationale)
 
 > **Équipe 11 · EduTutor IA** · Epic 14 — Internationalisation
 > **Critère visé** : CA-J4-2 — Persona élargie (utilisateur international)
@@ -10,7 +10,7 @@
 
 | Champ | Détail |
 |---|---|
-| **Nom** | Lucia Fernández |
+| **Nom** | Alberta Aravindan |
 | **Âge** | 17 ans |
 | **Statut** | Élève en terminale, lycée français à l'étranger (section internationale, Madrid) — suit une partie de ses cours en espagnol, une partie en français |
 | **Langue maternelle** | Espagnol (es-ES) |
@@ -38,8 +38,8 @@
 
 ## Ce que ce persona n'adresse PAS
 
-Lucia n'a pas de situation de handicap et ce persona ne couvre **pas** l'axe accessibilité RGAA (persona dédié traité par ailleurs, ex. Malik). L'objectif est de garder une séparation nette entre les deux axes J4 pour ne pas diluer les besoins spécifiques à l'internationalisation.
+Alberta n'a pas de situation de handicap et ce persona ne couvre **pas** l'axe accessibilité RGAA (persona dédié traité par ailleurs, ex. Malik). L'objectif est de garder une séparation nette entre les deux axes J4 pour ne pas diluer les besoins spécifiques à l'internationalisation.
 
 ## Impact produit
 
-Lucia matérialise le risque **R-I18N-01** (interface mono-langue bloquant l'expansion) et **R-I18N-02** (quiz généré dans la mauvaise langue) — voir [analyse-risques-i18n.md](analyse-risques-i18n.md). Elle est la persona de référence pour arbitrer les priorités MoSCoW de l'Epic 14 : tout ce qui la bloque concrètement (sélecteur de langue, langue du quiz) est **Must**, tout ce qui améliore son confort (formats localisés) est **Could**.
+Alberta matérialise le risque **R-I18N-01** (interface mono-langue bloquant l'expansion) et **R-I18N-02** (quiz généré dans la mauvaise langue) — voir [analyse-risques-i18n.md](analyse-risques-i18n.md). Elle est la persona de référence pour arbitrer les priorités MoSCoW de l'Epic 14 : tout ce qui la bloque concrètement (sélecteur de langue, langue du quiz) est **Must**, tout ce qui améliore son confort (formats localisés) est **Could**.

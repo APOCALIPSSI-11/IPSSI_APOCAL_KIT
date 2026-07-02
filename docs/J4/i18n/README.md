@@ -27,7 +27,7 @@ Conformément à la directive du PO (*« pas de code bricolé dans la panique »
 
 | Document | Contenu |
 |---|---|
-| [persona-lucia.md](persona-lucia.md) | Persona élargie — utilisatrice internationale (CA-J4-2) |
+| [persona-alberta.md](persona-alberta.md) | Persona élargie — utilisatrice internationale (CA-J4-2) |
 | [user-stories-i18n.md](user-stories-i18n.md) | User stories Given/When/Then, MoSCoW, SP estimés |
 | [analyse-risques-i18n.md](analyse-risques-i18n.md) | Risques i18n en matrice probabilité × impact + actions préventives estimées et priorisées |
 | [ADR-003 — Stratégie i18n](../../adr/ADR-003-strategie-i18n.md) | Décision d'architecture : lib i18n interface + langue du LLM à la volée |
