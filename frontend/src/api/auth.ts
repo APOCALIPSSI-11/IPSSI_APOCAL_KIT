@@ -42,6 +42,29 @@ export async function signup(input: {
   return data;
 }
 
+/**
+ * Inscription DÉDIÉE enseignant (US-26).
+ *
+ * Appelle l'endpoint distinct `POST /accounts/signup-enseignant/` (T-26.2).
+ * Comme pour le signup standard, on connecte automatiquement l'utilisateur
+ * ensuite en réutilisant email + mot de passe.
+ *
+ * NOTE : le contrat exact (champs `school` / `invite_code`) doit être aligné
+ * avec l'implémentation backend de T-26.2. Adapter si nécessaire.
+ */
+export async function signupEnseignant(input: {
+  email: string;
+  password: string;
+  first_name?: string;
+  last_name?: string;
+  school: string;
+  invite_code: string;
+}): Promise<User> {
+  const { data } = await api.post<User>('/accounts/signup-enseignant/', input);
+  await login(input.email, input.password);
+  return data;
+}
+
 export async function logout(): Promise<void> {
   try {
     await api.post('/accounts/logout/');
