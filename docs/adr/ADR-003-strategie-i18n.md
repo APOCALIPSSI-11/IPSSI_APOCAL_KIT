@@ -67,7 +67,6 @@ La levée de fonds de J4 ouvre une expansion européenne ([persona Lucia](../J4/
 
 ## Liens
 
-- Brief perturbation J4 : [documents_aide/README.md](../../documents_aide/README.md)
 - Epic 14 — dossier i18n complet : [docs/J4/i18n/README.md](../J4/i18n/README.md)
 - Persona Lucia : [docs/J4/i18n/persona-lucia.md](../J4/i18n/persona-lucia.md)
 - User stories i18n : [docs/J4/i18n/user-stories-i18n.md](../J4/i18n/user-stories-i18n.md)

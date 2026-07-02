@@ -3,7 +3,7 @@
 > **Équipe 11 · EduTutor IA** · Sprint 4 (jeudi 02/07/2026)
 > **Périmètre** : axe **internationalisation** de la perturbation J4 — *« Passage à l'échelle »*
 > **Porté par** : Romain LEFEVRE + Frederick TOUFIK
-> **Voir aussi** : [Brief perturbation J4](../../../documents_aide/README.md) · [ADR-003 — Stratégie i18n](../../adr/ADR-003-strategie-i18n.md)
+> **Voir aussi** : [ADR-003 — Stratégie i18n](../../adr/ADR-003-strategie-i18n.md)
 
 ---
 
